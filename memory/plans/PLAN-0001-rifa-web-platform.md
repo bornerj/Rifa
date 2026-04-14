@@ -21,6 +21,7 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
 - Confirmacao manual de pagamento implementada
 - Sorteio auditavel implementado
 - Build, lint e typecheck validados localmente
+- Repositorio publicado no GitHub
 
 ## Scope Locked for MVP
 
@@ -166,6 +167,7 @@ Concluido:
 - `npm run lint`
 - `npm run typecheck`
 - `npm run build`
+- publicacao inicial no GitHub concluida
 
 Pendente:
 - `npm run db:migrate` contra o banco de deploy
@@ -181,9 +183,9 @@ Pendente:
 
 ## Next Execution Steps
 
-1. Subir o repositório para o GitHub.
-2. Configurar Neon e aplicar migrations no banco alvo.
-3. Configurar variaveis de ambiente no Vercel.
+1. Configurar Neon e aplicar migrations no banco alvo.
+2. Configurar variaveis de ambiente no Vercel.
+3. Importar o repositorio no Vercel e concluir o primeiro deploy.
 4. Validar o fluxo completo em deploy remoto.
 5. Implementar hardening do MVP:
    - rate limit

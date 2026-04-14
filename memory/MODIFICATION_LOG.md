@@ -324,3 +324,45 @@ Last completed step:
 
 Next step:
 - Review `git status`, stage the intended files, and create the first commit when approved.
+
+## 2026-04-14 — Next steps alignment after GitHub publication
+
+Context/objective:
+- Update the active plan after the repository was successfully published to GitHub so the remaining next steps reflect the real state.
+
+Files changed:
+- `memory/plans/PLAN-0001-rifa-web-platform.md`
+
+Validations executed:
+- Compared the active plan against the completed GitHub publication milestone
+
+Result:
+- The plan now records GitHub publication as completed and keeps Neon + Vercel deployment as the active next steps.
+
+Last completed step:
+- Planning state aligned with the repository publication milestone.
+
+Next step:
+- Configure Neon, Vercel environment variables, and the first remote deployment.
+
+## 2026-04-14 — progress.md refactor to operational snapshot
+
+Context/objective:
+- Realign `memory/progress.md` with its intended purpose as a pure current-state snapshot, without mixing history, module architecture, or plan evolution.
+
+Files changed:
+- `memory/progress.md`
+
+Validations executed:
+- Compared `progress.md` responsibilities against `MODIFICATION_LOG`, `PLAN-0001`, and `kernel/ARCHITECTURE.md`
+
+Result:
+- `progress.md` now contains only current readiness, in-progress work, active risks, and the immediate next step.
+- Historical tracking remains in `MODIFICATION_LOG`.
+- Structural/module concerns remain outside `progress.md`.
+
+Last completed step:
+- Operational snapshot semantics restored for `memory/progress.md`.
+
+Next step:
+- Keep `progress.md` limited to current-state updates only.
