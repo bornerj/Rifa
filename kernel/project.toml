@@ -1,0 +1,156 @@
+# project.toml — Technical Dictionary of the Project
+# Loaded in EVERY interaction with the AI.
+# This is the single file a solo dev needs to read after 1 month away.
+# NEVER put real secret values here — names only.
+
+# ═══════════════════════════════════════
+# IDENTITY
+# ═══════════════════════════════════════
+
+[project]
+name        = "Rifa"
+version     = "1.0"
+description = "Plataforma web mobile-first para criacao, gestao e sorteio de rifas com validacao por OTP e pagamento via PIX."
+type        = "web-app"
+language    = "pt-BR"
+
+[project.team]
+author  = ""
+company = ""
+
+[project.urls]
+repository = ""
+docs       = ""
+
+# ═══════════════════════════════════════
+# HOSTING — Where the project lives (how many servers)
+# ═══════════════════════════════════════
+
+[hosting.frontend]
+provider = "Vercel"
+url      = ""
+service  = "Next.js App Router"
+
+[hosting.backend]
+provider = "Vercel"
+url      = ""
+service  = "Next.js Route Handlers + Server Actions"
+
+[hosting.database]
+provider = "Neon"
+service  = "PostgreSQL free tier"
+url_var  = "DATABASE_URL"
+
+# ═══════════════════════════════════════
+# STACK — What the project uses and which version
+# ═══════════════════════════════════════
+
+[stack.runtime]
+node   = "20+"
+python = "3.12 (kernel scripts/local tooling)"
+
+[stack.frontend]
+framework = "Next.js App Router"
+version   = "15.x"
+language  = "TypeScript (strict)"
+styling   = "TailwindCSS 3.4.x"
+
+[stack.backend]
+framework   = "Next.js Route Handlers + Server Actions"
+orm         = "Drizzle ORM"
+orm_version = "latest compatible"
+language    = "TypeScript (strict) - Node.js ESM"
+
+[stack.database]
+engine  = "PostgreSQL"
+version = "16"
+access  = "ORM only"
+
+[stack.package_manager]
+tool    = "npm"
+version = "10.x"
+
+# ═══════════════════════════════════════
+# DESIGN — Visual identity and CSS tooling
+# ═══════════════════════════════════════
+
+[design]
+framework         = "TailwindCSS"
+framework_version = "3.4.x"
+build_command     = "Next.js build pipeline"
+component_library = "custom + optional shadcn/ui"
+icon_library      = "Lucide"
+primary_color     = "#0F766E"
+secondary_color   = "#F59E0B"
+font_family       = "system-ui"
+spacing_unit      = "4px"
+
+# ═══════════════════════════════════════
+# ENVIRONMENT VARIABLES — Separated by server/platform
+# NEVER put real values here — names only
+# ═══════════════════════════════════════
+
+[environments.vercel]
+# Where to configure: Vercel → Project → Settings → Environment Variables
+vars = [
+  "DATABASE_URL",
+  "AUTH_SECRET",
+  "APP_URL",
+  "RESEND_API_KEY",
+  "SMS_PROVIDER_API_KEY",
+  "SMS_PROVIDER_SENDER",
+]
+
+[environments.neon]
+note = "Banco PostgreSQL serverless usado pela aplicacao"
+vars = [
+  "DATABASE_URL",
+]
+
+# ═══════════════════════════════════════
+# EXTERNAL INTEGRATIONS — Active third-party APIs
+# Use one [[integrations]] block per integration
+# ═══════════════════════════════════════
+
+[[integrations]]
+name     = "PIX"
+purpose  = "Geracao do payload copia-e-cola e QR Code para pagamento da rifa"
+env_vars = []
+
+[[integrations]]
+name     = "Transactional Email Provider"
+purpose  = "Confirmacao do email do administrador por link magico"
+docs     = ""
+env_vars = ["RESEND_API_KEY"]
+
+[[integrations]]
+name     = "SMS OTP Provider"
+purpose  = "Envio de codigo de 6 digitos para validacao do telefone do participante"
+docs     = ""
+env_vars = ["SMS_PROVIDER_API_KEY", "SMS_PROVIDER_SENDER"]
+
+# ═══════════════════════════════════════
+# DEV TOOLS — Local environment only, never go to production
+# ═══════════════════════════════════════
+
+[tools.dev.local]
+purpose = "Desenvolvimento local do app Next.js e execucao dos scripts do kernel"
+setup = "Node.js 20+, npm 10+, banco Neon configurado e variaveis no .env.local"
+note = "A maquina atual ainda precisa subir de Node.js 18 para 20+ antes do scaffold"
+
+# ═══════════════════════════════════════
+# AI CONTEXT REFERENCE — Do not remove this section
+# Used by the AI during onboarding and every session
+# ═══════════════════════════════════════
+
+[ai_context]
+kernel_entry   = "kernel/BOOTSTRAP.md"
+rules          = "kernel/RULES.md"
+behavior       = "kernel/SOUL.md"
+identity       = "kernel/project.toml"
+routing        = "kernel/index.toml"
+engineering    = "kernel/SYSTEM.md"
+memory_log     = "memory/MODIFICATION_LOG.md"
+memory_status  = "memory/progress.md"
+memory_debug   = "memory/logs/DEBUG-HISTORY.md"
+capabilities   = "kernel/ARCHITECTURE.md"
