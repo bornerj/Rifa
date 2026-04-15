@@ -15,7 +15,8 @@ export function MagicLinkPanel(): React.JSX.Element {
     <form action={formAction} className="rounded-[2rem] border border-brand-100 bg-white/90 p-5 shadow-raffle">
       <h2 className="text-lg font-black tracking-[-0.03em] text-ink">Confirme seu e-mail</h2>
       <p className="mt-2 text-sm leading-6 text-slate-600">
-        O painel administrativo fica completo depois da confirmacao por link magico.
+        O painel administrativo fica completo depois da confirmacao por link magico. Em ambiente
+        local com `development-preview`, o link aparece aqui na tela apos o reenvio.
       </p>
 
       {state.message ? (

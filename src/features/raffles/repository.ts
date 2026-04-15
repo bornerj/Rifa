@@ -64,6 +64,7 @@ export async function getRaffleDetailsByAdmin(raffleId: string, userId: string) 
         .select({
           id: raffleItemImages.id,
           imageUrl: raffleItemImages.imageUrl,
+          isRealItemImage: raffleItemImages.isRealItemImage,
           sortOrder: raffleItemImages.sortOrder,
         })
         .from(raffleItemImages)
@@ -108,6 +109,7 @@ export async function getPublicRaffleBySlug(slug: string) {
     ? await db
         .select({
           imageUrl: raffleItemImages.imageUrl,
+          isRealItemImage: raffleItemImages.isRealItemImage,
           sortOrder: raffleItemImages.sortOrder,
         })
         .from(raffleItemImages)
@@ -120,6 +122,7 @@ export async function getPublicRaffleBySlug(slug: string) {
       ticketNumber: quotaTickets.ticketNumber,
       paymentStatus: quotaTickets.paymentStatus,
       participantName: participants.name,
+      participantEmail: participants.email,
       participantPhone: participants.phoneE164,
       reservationId: quotaReservations.id,
       reservationStatus: quotaReservations.status,
@@ -175,7 +178,9 @@ export async function getAdminRaffleOperations(raffleId: string, userId: string)
       quantity: quotaReservations.quantity,
       createdAt: quotaReservations.createdAt,
       participantName: participants.name,
+      participantEmail: participants.email,
       participantPhone: participants.phoneE164,
+      receiptEmailSentAt: quotaReservations.receiptEmailSentAt,
     })
     .from(quotaReservations)
     .innerJoin(participants, eq(participants.id, quotaReservations.participantId))
@@ -206,9 +211,19 @@ export async function getAdminRaffleOperations(raffleId: string, userId: string)
     .orderBy(desc(draws.createdAt))
     .limit(1);
 
+  const ticketsByReservation = new Map<string, string[]>();
+  for (const ticket of tickets) {
+    const current = ticketsByReservation.get(ticket.reservationId) ?? [];
+    current.push(ticket.ticketNumber);
+    ticketsByReservation.set(ticket.reservationId, current);
+  }
+
   return {
     raffle,
-    reservations,
+    reservations: reservations.map((reservation) => ({
+      ...reservation,
+      ticketNumbers: ticketsByReservation.get(reservation.reservationId) ?? [],
+    })),
     tickets,
     latestDraw,
   };

@@ -17,19 +17,24 @@
 - Cadastro e login do admin implementados
 - Confirmacao do admin por link magico implementada
 - Criacao de rifa implementada
+- Edicao posterior de PIX implementada no painel da rifa
+- Edicao posterior do item e das imagens implementada no painel da rifa
 - Pagina publica da rifa implementada
-- Fluxo do participante com OTP implementado
+- Fluxo do participante sem OTP implementado localmente, com coleta de nome, email, telefone e geracao imediata dos numeros
 - Reserva de cotas com geracao aleatoria de numeros de 5 digitos implementada
 - Exibicao de QR Code PIX implementada
 - Grid publica de cotas implementada
 - Confirmacao manual de pagamento pelo admin implementada
 - Sorteio auditavel implementado
 - Repositorio publicado no GitHub
+- Migration `0002_milky_patch` aplicada no banco Neon alvo
+- Confirmacao por email via Brevo validada com sucesso
 
 ## In Progress Now
 
-- Preparacao do deploy remoto em Neon + Vercel
-- Hardening do MVP
+- Preparacao do deploy remoto em Vercel
+- Mudanca de escopo para email via Brevo apos confirmacao manual do PIX validada localmente
+- Hardening do MVP retomado apos migracao e teste funcional em ambiente remoto
 
 ## Blocked Now
 
@@ -37,11 +42,11 @@
 
 ## Active Risks
 
-- OTP em producao ainda depende da configuracao de um provedor real de SMS
+- Vercel Blob precisa estar configurado no ambiente para upload da imagem real do objeto
 - Confirmacao do PIX ainda e manual no MVP
-- Ainda nao existe rate limiting robusto para abuso de OTP
+- Upload local de imagem nao e persistente de forma confiavel em Vercel/serverless sem storage dedicado
 - Ainda nao ha suite automatizada de testes cobrindo o fluxo principal
 
 ## Immediate Next Step
 
-- Configurar Neon, aplicar migrations no banco alvo e concluir o primeiro deploy no Vercel
+- Testar upload da imagem real com Vercel Blob configurado e concluir deploy Vercel

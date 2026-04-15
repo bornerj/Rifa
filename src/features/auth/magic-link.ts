@@ -3,6 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { eq } from "drizzle-orm";
 
 import { readAuthEnv, readProviderEnv } from "@/lib/env";
+import { sendTransactionalEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { getDb } from "@/server/db";
 import { emailVerificationTokens, users } from "@/server/db/schema";
@@ -37,21 +38,19 @@ export async function sendEmailConfirmation({
   confirmationLink: string;
 }): Promise<{ delivered: boolean; previewOnly: boolean }> {
   const providers = readProviderEnv();
+  const isPreview =
+    !providers.BREVO_SMTP_USER ||
+    !(providers.BREVO_SMTP_KEY ?? providers.BREVO_API_KEY) ||
+    !providers.BREVO_SENDER_EMAIL;
 
-  if (!providers.RESEND_API_KEY || providers.RESEND_API_KEY === "development-preview") {
+  if (isPreview) {
     logger.info("Magic link email preview generated", { email, confirmationLink });
     return { delivered: false, previewOnly: true };
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${providers.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "Rifa <onboarding@resend.dev>",
-      to: [email],
+  try {
+    return await sendTransactionalEmail({
+      to: email,
       subject: "Confirme seu e-mail no Rifa",
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -61,16 +60,14 @@ export async function sendEmailConfirmation({
           <p>Se voce nao solicitou esse cadastro, ignore este e-mail.</p>
         </div>
       `,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    logger.error("Failed to send confirmation email", { email, errorText });
+    });
+  } catch (error) {
+    logger.error("Failed to send confirmation email", {
+      email,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
     return { delivered: false, previewOnly: true };
   }
-
-  return { delivered: true, previewOnly: false };
 }
 
 export async function consumeEmailConfirmationToken(token: string) {

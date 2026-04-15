@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 
 import { ParticipantFlow } from "@/features/participants/components/participant-flow";
+import { ImageShowcaseGrid } from "@/features/raffles/components/image-showcase-grid";
+import { PixPaymentCard } from "@/features/raffles/components/pix-payment-card";
 import { TicketGrid } from "@/features/participants/components/ticket-grid";
 import { getPublicRaffleBySlug } from "@/features/raffles/repository";
 import { formatCurrencyFromCents, formatDate } from "@/lib/formatters";
@@ -31,10 +33,13 @@ export default async function PublicRafflePage({
     notFound();
   }
 
-  const qrCodeDataUrl = await QRCode.toDataURL(raffle.pixPayload, {
-    width: 220,
-    margin: 1,
-  });
+  const hasPixConfigured = Boolean(raffle.pixLabel.trim() && raffle.pixPayload.trim());
+  const qrCodeDataUrl = hasPixConfigured
+    ? await QRCode.toDataURL(raffle.pixPayload, {
+        width: 220,
+        margin: 1,
+      })
+    : null;
 
   return (
     <main className="min-h-screen bg-paper bg-raffle-glow px-5 py-8 text-ink sm:px-8">
@@ -59,49 +64,43 @@ export default async function PublicRafflePage({
 
               <div className="mt-6 rounded-[1.5rem] bg-slate-50 p-4">
                 <h2 className="text-lg font-bold text-ink">Imagens do item</h2>
-                <div className="mt-4 grid gap-3">
-                  {raffle.images.length ? (
-                    raffle.images.map((image) => (
-                      <a
-                        key={image.imageUrl}
-                        href={image.imageUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="break-all rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"
-                      >
-                        {image.imageUrl}
-                      </a>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-600">As imagens serao carregadas em breve.</p>
-                  )}
+                <div className="mt-4">
+                  <ImageShowcaseGrid images={raffle.images} />
                 </div>
               </div>
             </div>
-
-            <ParticipantFlow raffleId={raffle.id} quotaPriceInCents={raffle.quotaPriceInCents} />
+            {hasPixConfigured ? (
+              <ParticipantFlow raffleId={raffle.id} quotaPriceInCents={raffle.quotaPriceInCents} />
+            ) : (
+              <section className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 shadow-raffle">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-700">
+                  Pagamento ainda nao liberado
+                </p>
+                <h2 className="mt-3 text-2xl font-black tracking-[-0.04em] text-amber-950">
+                  O admin ainda precisa configurar o PIX desta rifa
+                </h2>
+                <p className="mt-3 text-sm leading-6 text-amber-900/80">
+                  Assim que o PIX for cadastrado, a pagina libera a reserva de cotas e mostra o QR
+                  Code para pagamento.
+                </p>
+              </section>
+            )}
           </div>
 
           <aside className="rounded-[2rem] border border-ink bg-ink p-6 text-white shadow-raffle">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-100">
-              Pagamento PIX
-            </p>
-            <p className="mt-3 text-4xl font-black tracking-[-0.04em]">
-              {formatCurrencyFromCents(raffle.quotaPriceInCents)}
-            </p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              Depois de validar o telefone e reservar as cotas, use este QR Code para concluir o pagamento.
-            </p>
-
-            <div className="mt-5 rounded-[1.5rem] bg-white p-4">
-              <img src={qrCodeDataUrl} alt="QR Code PIX" className="mx-auto h-56 w-56 rounded-2xl" />
-            </div>
-
-            <div className="mt-4 rounded-[1.5rem] bg-white/10 p-4 text-sm leading-6 text-slate-200">
-              <p className="font-semibold text-white">PIX:</p>
-              <p>{raffle.pixLabel}</p>
-              <p className="mt-3 break-all text-xs text-slate-300">{raffle.pixPayload}</p>
-            </div>
+            {hasPixConfigured ? (
+              <PixPaymentCard
+                pixLabel={raffle.pixLabel}
+                pixPayload={raffle.pixPayload}
+                qrCodeDataUrl={qrCodeDataUrl ?? ""}
+                quotaPriceInCents={raffle.quotaPriceInCents}
+              />
+            ) : (
+              <div className="mt-5 rounded-[1.5rem] bg-white/10 p-4 text-sm leading-6 text-slate-200">
+                O QR Code PIX aparecera aqui assim que o admin concluir a configuracao de
+                pagamento.
+              </div>
+            )}
 
             <Link
               href="/cadastrar"

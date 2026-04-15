@@ -366,3 +366,344 @@ Last completed step:
 
 Next step:
 - Keep `progress.md` limited to current-state updates only.
+
+## 2026-04-14 — Deploy setup refinement for Neon + Vercel order
+
+Context/objective:
+- Refine the deployment setup guide so the remote rollout follows the correct order: Neon first, then envs, then Vercel.
+
+Files changed:
+- `docs/project/SETUP.md`
+
+Validations executed:
+- Compared the existing setup guide against the active plan next steps and the intended remote deployment sequence
+
+Result:
+- `SETUP.md` now works as an operational checklist for creating the Neon database, applying migrations, configuring env vars, and only then deploying on Vercel.
+- Common deployment mistakes are now called out explicitly.
+
+Last completed step:
+- Deployment documentation aligned to the correct rollout order.
+
+Next step:
+- Create the Neon project, capture `DATABASE_URL`, and proceed with the first remote deployment checklist.
+
+## 2026-04-14 — Setup clarification for env workflow
+
+Context/objective:
+- Improve the setup guidance so env handling is more explicit and create the local `.env.local` scaffold to reduce friction during Neon/Vercel setup.
+
+Files changed:
+- `docs/project/SETUP.md`
+- `.env.local`
+
+Validations executed:
+- Verified `.env.local` did not exist yet
+- Reviewed `.env.example` and the current deployment checklist
+
+Result:
+- The setup guide now tells the user to place the Neon connection string directly into `.env.local`.
+- Environment variables now show clearer usage choices for preview vs. real providers.
+- A local `.env.local` scaffold was created with safe placeholders.
+
+Last completed step:
+- Local environment setup path simplified for the upcoming Neon/Vercel rollout.
+
+Next step:
+- Fill `DATABASE_URL` from Neon into `.env.local` and continue with the deployment checklist.
+
+## 2026-04-14 — Neon wizard guidance added to setup
+
+Context/objective:
+- Add explicit guidance for the Neon project creation wizard so the database can be created without ambiguity during deployment setup.
+
+Files changed:
+- `docs/project/SETUP.md`
+
+Validations executed:
+- Confirmed the project does not require Neon Auth and that the deployment goal is a standard MVP database setup
+
+Result:
+- `SETUP.md` now explains how to choose region, auth, launch, and scale during Neon project creation.
+
+Last completed step:
+- Neon creation guidance documented in the setup flow.
+
+Next step:
+- Create the Neon database using the documented defaults and place the resulting `DATABASE_URL` into `.env.local`.
+
+## 2026-04-14 — Neon connection string guidance clarified
+
+Context/objective:
+- Clarify which connection string from the Neon dashboard should be used in the local environment and which extra variables can be ignored during the current setup.
+
+Files changed:
+- `docs/project/SETUP.md`
+
+Validations executed:
+- Matched the Neon dashboard output against the app's current env requirements
+
+Result:
+- `SETUP.md` now explicitly tells the user to use the `DATABASE_URL` marked as recommended and ignore the extra `PG*` and `POSTGRES_*` values for this setup flow.
+
+Last completed step:
+- Neon connection string selection documented for the deployment checklist.
+
+Next step:
+- Run the local database migration and connectivity checks using the configured `DATABASE_URL`.
+
+## 2026-04-14 — Drizzle config loads .env.local automatically
+
+Context/objective:
+- Remove the need for manual shell sourcing of `.env.local` before running Drizzle commands.
+
+Files changed:
+- `drizzle.config.ts`
+- `docs/project/SETUP.md`
+
+Validations executed:
+- Confirmed `drizzle.config.ts` only read `process.env.DATABASE_URL` and did not load `.env.local`
+
+Result:
+- Drizzle now loads `.env.local` automatically through `@next/env`, aligning migration commands with the rest of the Next.js project setup.
+
+Last completed step:
+- Local migration workflow made more reliable.
+
+Next step:
+- Re-run `npm run db:migrate` with the configured Neon `DATABASE_URL`.
+
+## 2026-04-14 — check-db script loads .env.local automatically
+
+Context/objective:
+- Align the database connectivity check script with the same env-loading behavior used by Drizzle and Next.js.
+
+Files changed:
+- `scripts/check-db.mjs`
+
+Validations executed:
+- Confirmed the script read `process.env.DATABASE_URL` directly and therefore failed when `.env.local` was not manually sourced in the shell
+
+Result:
+- `npm run db:check` now loads `.env.local` automatically before testing the Neon connection.
+
+Last completed step:
+- Local DB validation flow aligned across migration and connectivity scripts.
+
+Next step:
+- Re-run `npm run db:check` and continue with local app startup.
+
+## 2026-04-14 — ESM import fix for @next/env
+
+Context/objective:
+- Fix the local env-loading integration after Node reported that `@next/env` could not be imported as a named export in ESM mode.
+
+Files changed:
+- `drizzle.config.ts`
+- `scripts/check-db.mjs`
+
+Validations executed:
+- Used the runtime error message to identify the CommonJS-to-ESM interop issue
+
+Result:
+- Both files now import `@next/env` through the default export and destructure `loadEnvConfig`, matching the runtime's expected interop behavior.
+
+Last completed step:
+- Env-loading compatibility corrected for local Drizzle and DB check scripts.
+
+Next step:
+- Re-run `npm run db:check` and then continue with `npm run dev`.
+
+## 2026-04-14 — Debug history update for raffle creation and image grid issues
+
+Context/objective:
+- Persist the debugging knowledge from the issues found while testing raffle creation and the public image grid.
+
+Files changed:
+- `memory/logs/DEBUG-HISTORY.md`
+
+Validations executed:
+- Consolidated the observed symptoms, confirmed root causes, and documented the applied fixes
+
+Result:
+- The project now retains explicit debug memory for the raffle-creation flow issue and the broken 2-column image grid issue.
+
+Last completed step:
+- Bug knowledge captured for future sessions.
+
+Next step:
+- Keep adding resolved issues to `DEBUG-HISTORY.md` whenever a bug is identified and fixed.
+
+## 2026-04-15 — Debug history update for Next.js 15 use server export restriction
+
+Context/objective:
+- Persist the technical memory for the public OTP flow failure caused by an invalid non-async export inside a `use server` file.
+
+Files changed:
+- `memory/logs/DEBUG-HISTORY.md`
+
+Validations executed:
+- Confirmed the runtime error message
+- Confirmed the fix by moving the initial participant state out of the server-action file
+- Re-ran `npm run typecheck` and `npm run lint`
+
+Result:
+- The project now retains explicit debug memory for the Next.js 15 `use server` export restriction encountered in the participant flow.
+
+Last completed step:
+- Bug knowledge for the OTP action runtime failure captured.
+
+Next step:
+- Continue recording resolved runtime/framework issues in `DEBUG-HISTORY.md` as they appear.
+
+## 2026-04-15 — Scope pivot registered: email receipt instead of OTP
+
+Context/objective:
+- Register the significant MVP scope change requested on 2026-04-15 before implementation.
+- The participant flow will no longer use OTP, SMS, or WhatsApp.
+- Participants will provide name, email, phone, and quota quantity; generated numbers will be shown immediately.
+- The admin will confirm PIX manually from an operational grid, then send a receipt/confirmation email through Brevo.
+- The raffle item image scope now includes one labeled real-object image with upload support, with production storage still requiring an explicit durable-storage decision.
+
+Files changed:
+- `memory/plans/PLAN-0001-rifa-web-platform.md`
+- `memory/decisions/DECISION-005.md`
+- `memory/progress.md`
+- `docs/project/REQUIREMENTS.md`
+- `docs/project/SCOPE.md`
+- `docs/project/PROJECT_OVERVIEW.md`
+- `kernel/project.toml`
+- `kernel/SYSTEM.md`
+
+Validations executed:
+- Read active plan, requirements, scope, project overview, project dictionary, and technical system rules
+- Classified the request as a structural scope change requiring plan update before code implementation
+
+Result:
+- The new scope is recorded in plan, decision memory, product docs, and technical rules.
+- Implementation remains pending explicit approval of the updated Phase 7.
+
+Last completed step:
+- Scope pivot and plan modification registered.
+
+Next step:
+- Approve Phase 7 implementation and answer the remaining storage/admin-confirmation details before code changes.
+
+## 2026-04-15 — Phase 7 implementation: no OTP + Brevo receipts + Vercel Blob
+
+Context/objective:
+- Implement the approved Phase 7 scope pivot.
+- Replace the public participant OTP flow with a single reservation form using name, email, phone, and quota quantity.
+- Add batch payment confirmation in the admin grid.
+- Send payment receipt emails through Brevo SMTP after manual PIX confirmation.
+- Add persistent image upload for the real item image using Vercel Blob.
+
+Files changed:
+- `package.json`
+- `package-lock.json`
+- `.env.example`
+- `drizzle/0002_milky_patch.sql`
+- `drizzle/meta/0002_snapshot.json`
+- `drizzle/meta/_journal.json`
+- `src/lib/env.ts`
+- `src/lib/email.ts`
+- `src/server/db/schema.ts`
+- `src/features/auth/magic-link.ts`
+- `src/features/notifications/receipt-email.ts`
+- `src/features/participants/actions.ts`
+- `src/features/participants/schemas.ts`
+- `src/features/participants/utils.ts`
+- `src/features/participants/components/participant-flow.tsx`
+- `src/features/participants/components/ticket-grid.tsx`
+- `src/features/participants/sms.ts`
+- `src/features/raffles/repository.ts`
+- `src/features/raffles/actions.ts`
+- `src/features/raffles/components/admin-raffle-details-client.tsx`
+- `src/features/raffles/components/image-showcase-grid.tsx`
+- `src/app/api/admin/raffles/[id]/payments/route.ts`
+- `src/app/api/admin/raffles/[id]/item/route.ts`
+- `src/app/api/admin/raffles/[id]/item/upload/route.ts`
+- `src/app/confirmar-email/pendente/page.tsx`
+- `src/app/page.tsx`
+- `docs/project/SETUP.md`
+- `memory/plans/PLAN-0001-rifa-web-platform.md`
+- `memory/progress.md`
+
+Validations executed:
+- `npm install nodemailer @vercel/blob`
+- `npm install -D @types/nodemailer`
+- `npm install drizzle-orm@0.45.2 drizzle-kit@0.31.10`
+- `npm run db:generate`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+- `npm audit --audit-level=high`
+
+Result:
+- Public reservation flow no longer uses OTP/SMS/WhatsApp.
+- Participant email is now required and stored for receipts.
+- Ticket numbers are generated and shown immediately after reservation.
+- Admin payment confirmation supports batch selection.
+- Receipt email dispatch is integrated through Brevo SMTP.
+- Real item image upload uses Vercel Blob and labels the first image as the real object image.
+- Drizzle high-severity audit finding was fixed by upgrading `drizzle-orm`; moderate dev dependency findings remain through `drizzle-kit`.
+
+Last completed step:
+- Local implementation, migration generation, lint, typecheck, build, and high-severity audit validation completed.
+
+Next step:
+- Apply the generated migration to the target Neon database and run a functional test with real Brevo SMTP and Vercel Blob environment variables configured.
+
+## 2026-04-15 — Neon migration 0002 verified
+
+Context/objective:
+- Verify the user's `npm run db:migrate` execution against the target Neon database.
+- Fix the local `db:check` helper after runtime import behavior for `@next/env` failed in the `.mjs` script.
+
+Files changed:
+- `scripts/check-db.mjs`
+- `memory/progress.md`
+- `memory/plans/PLAN-0001-rifa-web-platform.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validations executed:
+- `npm run db:check`
+- Direct schema query against Neon for `drizzle.__drizzle_migrations`, `participants`, `quota_reservations`, `raffle_item_images`, and `public.otp_challenges`
+
+Result:
+- Neon connection is OK.
+- Migration id `3` / `0002_milky_patch` is registered in `drizzle.__drizzle_migrations`.
+- `participants.email` exists and is `NOT NULL`.
+- `quota_reservations.receipt_email_sent_at` exists.
+- `raffle_item_images.is_real_item_image` exists and is `NOT NULL`.
+- `public.otp_challenges` no longer exists.
+- `scripts/check-db.mjs` now loads `@next/env` correctly at runtime.
+
+Last completed step:
+- Target database migration verified.
+
+Next step:
+- Configure Brevo SMTP and Vercel Blob in the Vercel environment, then run the full functional test.
+
+## 2026-04-15 — Brevo email confirmation validated
+
+Context/objective:
+- Record the successful real-world validation of the Brevo email confirmation flow after the Phase 7 scope pivot.
+
+Files changed:
+- `memory/progress.md`
+- `memory/plans/PLAN-0001-rifa-web-platform.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validations executed:
+- User confirmed that email confirmation via Brevo worked successfully.
+
+Result:
+- Brevo SMTP email confirmation is validated.
+- Remaining Phase 7 external validation is focused on Vercel Blob upload and Vercel deployment flow.
+
+Last completed step:
+- Brevo email confirmation verified by user.
+
+Next step:
+- Configure/test Vercel Blob for real item image upload and continue Vercel deployment validation.

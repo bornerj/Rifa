@@ -1,4 +1,4 @@
-import { randomInt, randomUUID, createHash } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 
 export function normalizeBrazilPhone(rawPhone: string): string {
   const digits = rawPhone.replace(/\D/g, "");
@@ -11,18 +11,6 @@ export function normalizeBrazilPhone(rawPhone: string): string {
   }
 
   return `+55${digits}`;
-}
-
-export function generateOtpCode(): string {
-  return String(randomInt(0, 1_000_000)).padStart(6, "0");
-}
-
-export function hashOtpCode(code: string): string {
-  return createHash("sha256").update(code).digest("hex");
-}
-
-export function verifyOtpCode(code: string, storedHash: string): boolean {
-  return hashOtpCode(code) === storedHash;
 }
 
 export function createAuditReference(): string {

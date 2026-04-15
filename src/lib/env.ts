@@ -11,9 +11,14 @@ const databaseEnvSchema = z.object({
 });
 
 const providerEnvSchema = z.object({
-  RESEND_API_KEY: z.string().optional(),
-  SMS_PROVIDER_API_KEY: z.string().optional(),
-  SMS_PROVIDER_SENDER: z.string().optional(),
+  BREVO_SMTP_HOST: z.string().default("smtp-relay.brevo.com"),
+  BREVO_SMTP_PORT: z.coerce.number().int().positive().default(587),
+  BREVO_SMTP_USER: z.string().optional(),
+  BREVO_SMTP_KEY: z.string().optional(),
+  BREVO_API_KEY: z.string().optional(),
+  BREVO_SENDER_EMAIL: z.string().email().optional(),
+  BREVO_SENDER_NAME: z.string().default("Rifa"),
+  BLOB_READ_WRITE_TOKEN: z.string().optional(),
 });
 
 const runtimeSummarySchema = authEnvSchema.merge(databaseEnvSchema).merge(providerEnvSchema);
@@ -37,9 +42,14 @@ export function readDatabaseEnv(): DatabaseEnv {
 
 export function readProviderEnv() {
   return providerEnvSchema.parse({
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
-    SMS_PROVIDER_API_KEY: process.env.SMS_PROVIDER_API_KEY,
-    SMS_PROVIDER_SENDER: process.env.SMS_PROVIDER_SENDER,
+    BREVO_SMTP_HOST: process.env.BREVO_SMTP_HOST,
+    BREVO_SMTP_PORT: process.env.BREVO_SMTP_PORT,
+    BREVO_SMTP_USER: process.env.BREVO_SMTP_USER,
+    BREVO_SMTP_KEY: process.env.BREVO_SMTP_KEY,
+    BREVO_API_KEY: process.env.BREVO_API_KEY,
+    BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL,
+    BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   });
 }
 
@@ -50,9 +60,14 @@ export function readOptionalServerEnv():
     DATABASE_URL: process.env.DATABASE_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
     APP_URL: process.env.APP_URL,
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
-    SMS_PROVIDER_API_KEY: process.env.SMS_PROVIDER_API_KEY,
-    SMS_PROVIDER_SENDER: process.env.SMS_PROVIDER_SENDER,
+    BREVO_SMTP_HOST: process.env.BREVO_SMTP_HOST,
+    BREVO_SMTP_PORT: process.env.BREVO_SMTP_PORT,
+    BREVO_SMTP_USER: process.env.BREVO_SMTP_USER,
+    BREVO_SMTP_KEY: process.env.BREVO_SMTP_KEY,
+    BREVO_API_KEY: process.env.BREVO_API_KEY,
+    BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL,
+    BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
   });
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Smartphone, Ticket, Trophy } from "lucide-react";
+import { ArrowRight, MailCheck, Ticket, Trophy } from "lucide-react";
 
 const highlights = [
   {
@@ -9,10 +9,10 @@ const highlights = [
     icon: Trophy,
   },
   {
-    title: "Valide participantes por telefone",
+    title: "Confirme por email apos o PIX",
     description:
-      "O participante informa nome e telefone, recebe o OTP e segue direto para a escolha da quantidade de cotas.",
-    icon: Smartphone,
+      "O participante informa nome, email e telefone, ve os numeros na hora e recebe o recibo depois da confirmacao manual.",
+    icon: MailCheck,
   },
   {
     title: "Organize cotas e sorteio",
@@ -37,7 +37,7 @@ export default function HomePage(): React.JSX.Element {
             </p>
             <div className="space-y-4">
               <h1 className="max-w-xl text-5xl font-black leading-[0.95] tracking-[-0.05em] sm:text-6xl">
-                Venda cotas, valide por SMS e conduza o sorteio no mesmo lugar.
+                Venda cotas, confirme PIX e envie recibos por email no mesmo lugar.
               </h1>
               <p className="max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
                 A base do produto ja esta pronta para evoluir com Next.js, Neon, Drizzle e um fluxo
@@ -74,7 +74,7 @@ export default function HomePage(): React.JSX.Element {
                 <p className="text-sm text-slate-300">Valor da cota</p>
                 <p className="text-4xl font-black tracking-[-0.04em]">R$ 10,00</p>
                 <p className="text-sm leading-6 text-slate-300">
-                  Validacao por OTP, QR Code PIX e grade de cotistas com uma entrada por cota.
+                  Reserva sem OTP, QR Code PIX e grade de cotistas com uma entrada por cota.
                 </p>
               </div>
             </div>
@@ -108,7 +108,7 @@ export default function HomePage(): React.JSX.Element {
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-700">fase 1</p>
             <h3 className="mt-2 text-lg font-bold">Fundacao</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Scaffold Next.js, auth do admin, schema base e abstracao de OTP.
+              Scaffold Next.js, auth do admin, schema base e email transacional.
             </p>
           </div>
           <div>

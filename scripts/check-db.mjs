@@ -1,4 +1,9 @@
+import nextEnv from "@next/env";
 import postgres from "postgres";
+
+const { loadEnvConfig } = nextEnv;
+
+loadEnvConfig(process.cwd());
 
 const databaseUrl = process.env.DATABASE_URL;
 

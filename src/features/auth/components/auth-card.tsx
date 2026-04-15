@@ -46,16 +46,19 @@ export function AuthCard({
 
       <form action={formAction} className="mt-6 space-y-4">
         {fields.map((field) => (
-          <label key={field.name} className="block space-y-2">
-            <span className="text-sm font-semibold text-slate-700">{field.label}</span>
+          <div key={field.name} className="flex w-full flex-col items-stretch gap-2">
+            <label htmlFor={field.name} className="block text-sm font-semibold text-slate-700">
+              {field.label}
+            </label>
             <input
+              id={field.name}
               name={field.name}
               type={field.type ?? "text"}
               placeholder={field.placeholder}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-brand-500 focus:bg-white"
+              className="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-brand-500 focus:bg-white"
               required
             />
-          </label>
+          </div>
         ))}
 
         {state.message ? (

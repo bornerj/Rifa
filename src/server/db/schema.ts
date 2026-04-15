@@ -89,6 +89,7 @@ export const raffleItemImages = pgTable("raffle_item_images", {
     .notNull()
     .references(() => raffleItems.id),
   imageUrl: text("image_url").notNull(),
+  isRealItemImage: boolean("is_real_item_image").notNull().default(false),
   sortOrder: integer("sort_order").notNull(),
 });
 
@@ -98,26 +99,10 @@ export const participants = pgTable("participants", {
     .notNull()
     .references(() => raffles.id),
   name: varchar("name", { length: 180 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
   phoneE164: varchar("phone_e164", { length: 20 }).notNull(),
-  phoneVerifiedAt: timestamp("phone_verified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
-
-export const otpChallenges = pgTable(
-  "otp_challenges",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    phoneE164: varchar("phone_e164", { length: 20 }).notNull(),
-    codeHash: text("code_hash").notNull(),
-    attempts: integer("attempts").notNull().default(0),
-    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    verifiedAt: timestamp("verified_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  },
-  (table) => ({
-    phoneIdx: index("otp_challenges_phone_idx").on(table.phoneE164),
-  }),
-);
 
 export const quotaReservations = pgTable("quota_reservations", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -131,6 +116,7 @@ export const quotaReservations = pgTable("quota_reservations", {
   unitPriceInCents: integer("unit_price_in_cents").notNull(),
   totalAmountInCents: integer("total_amount_in_cents").notNull(),
   status: reservationStatusEnum("status").notNull().default("pending"),
+  receiptEmailSentAt: timestamp("receipt_email_sent_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

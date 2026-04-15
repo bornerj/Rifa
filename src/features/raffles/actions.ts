@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import { requireConfirmedAdmin } from "@/features/auth/session";
 import { createRaffleSchema } from "@/features/raffles/schemas";
+import { logger } from "@/lib/logger";
 import { slugify } from "@/lib/utils";
 import { getDb } from "@/server/db";
 import { raffleItemImages, raffleItems, raffles } from "@/server/db/schema";
@@ -13,102 +13,177 @@ import { eq } from "drizzle-orm";
 export type CreateRaffleActionState = {
   status: "idle" | "error" | "success";
   message?: string;
+  redirectTo?: string;
+  fieldErrors?: Partial<Record<"purpose", string>>;
 };
 
 export async function createRaffleAction(
   _prevState: CreateRaffleActionState,
   formData: FormData,
 ): Promise<CreateRaffleActionState> {
-  const admin = await requireConfirmedAdmin();
-  const imageEntries = formData
-    .getAll("images")
-    .map((entry) => String(entry).trim())
-    .filter(Boolean);
+  const traceId = crypto.randomUUID();
 
-  const parsed = createRaffleSchema.safeParse({
-    name: formData.get("name"),
-    purpose: formData.get("purpose"),
-    beneficiary: formData.get("beneficiary"),
-    durationInDays: formData.get("durationInDays"),
-    quotaPriceInCents: formData.get("quotaPriceInCents"),
-    pixLabel: formData.get("pixLabel"),
-    pixPayload: formData.get("pixPayload"),
-    itemName: formData.get("itemName"),
-    images: imageEntries,
-  });
+  try {
+    logger.info("Create raffle started", { traceId });
 
-  if (!parsed.success) {
-    return {
-      status: "error",
-      message: parsed.error.issues[0]?.message ?? "Nao foi possivel criar a rifa.",
-    };
-  }
+    const admin = await requireConfirmedAdmin();
+    logger.info("Create raffle admin confirmed", { traceId, adminId: admin.id });
 
-  const db = getDb();
-  const baseSlug = slugify(parsed.data.name);
-  let slug = baseSlug;
-  let suffix = 1;
+    const imageEntries = formData
+      .getAll("images")
+      .map((entry) => String(entry).trim())
+      .filter(Boolean);
+    logger.info("Create raffle images parsed", {
+      traceId,
+      imageCount: imageEntries.length,
+    });
 
-  while (true) {
-    const [existing] = await db
-      .select({ id: raffles.id })
-      .from(raffles)
-      .where(eq(raffles.slug, slug))
-      .limit(1);
+    const parsed = createRaffleSchema.safeParse({
+      name: formData.get("name"),
+      purpose: formData.get("purpose"),
+      beneficiary: formData.get("beneficiary"),
+      durationInDays: formData.get("durationInDays"),
+      quotaPriceInCents: formData.get("quotaPriceInCents"),
+      itemName: formData.get("itemName"),
+      images: imageEntries,
+    });
 
-    if (!existing) {
-      break;
+    if (!parsed.success) {
+      const firstIssue = parsed.error.issues[0];
+      logger.warn("Create raffle validation failed", {
+        traceId,
+        issue: firstIssue?.message,
+      });
+      return {
+        status: "error",
+        message: firstIssue?.message ?? "Nao foi possivel criar a rifa.",
+        fieldErrors:
+          firstIssue?.path[0] === "purpose"
+            ? {
+                purpose: firstIssue.message,
+              }
+            : undefined,
+      };
     }
 
-    suffix += 1;
-    slug = `${baseSlug}-${suffix}`;
-  }
+    logger.info("Create raffle validation passed", {
+      traceId,
+      name: parsed.data.name,
+      durationInDays: parsed.data.durationInDays,
+      quotaPriceInCents: parsed.data.quotaPriceInCents,
+    });
 
-  const createdAt = new Date();
-  const expiresAt = new Date(createdAt.getTime() + parsed.data.durationInDays * 24 * 60 * 60 * 1000);
+    const db = getDb();
+    const baseSlug = slugify(parsed.data.name);
+    let slug = baseSlug;
+    let suffix = 1;
 
-  const createdRaffleId = await db.transaction(async (tx) => {
-    const [createdRaffle] = await tx
-      .insert(raffles)
-      .values({
-        createdByUserId: admin.id,
-        name: parsed.data.name.trim(),
-        purpose: parsed.data.purpose.trim(),
-        beneficiary: parsed.data.beneficiary.trim(),
-        slug,
-        quotaPriceInCents: parsed.data.quotaPriceInCents,
-        durationInDays: parsed.data.durationInDays,
-        pixLabel: parsed.data.pixLabel.trim(),
-        pixPayload: parsed.data.pixPayload.trim(),
-        status: "published",
-        expiresAt,
-      })
-      .returning({
-        id: raffles.id,
-      });
+    while (true) {
+      const [existing] = await db
+        .select({ id: raffles.id })
+        .from(raffles)
+        .where(eq(raffles.slug, slug))
+        .limit(1);
 
-    const [createdItem] = await tx
-      .insert(raffleItems)
-      .values({
-        raffleId: createdRaffle.id,
-        name: parsed.data.itemName.trim(),
-      })
-      .returning({
-        id: raffleItems.id,
-      });
+      if (!existing) {
+        break;
+      }
 
-    await tx.insert(raffleItemImages).values(
-      parsed.data.images.map((imageUrl, index) => ({
-        raffleItemId: createdItem.id,
-        imageUrl,
-        sortOrder: index,
-      })),
+      suffix += 1;
+      slug = `${baseSlug}-${suffix}`;
+    }
+
+    logger.info("Create raffle slug resolved", { traceId, slug });
+
+    const createdAt = new Date();
+    const expiresAt = new Date(
+      createdAt.getTime() + parsed.data.durationInDays * 24 * 60 * 60 * 1000,
     );
 
-    return createdRaffle.id;
-  });
+    const createdRaffleId = await db.transaction(async (tx) => {
+      logger.info("Create raffle transaction opened", { traceId });
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  redirect(`/admin/rifas/${createdRaffleId}`);
+      const [createdRaffle] = await tx
+        .insert(raffles)
+        .values({
+          createdByUserId: admin.id,
+          name: parsed.data.name.trim(),
+          purpose: parsed.data.purpose.trim(),
+          beneficiary: parsed.data.beneficiary.trim(),
+          slug,
+          quotaPriceInCents: parsed.data.quotaPriceInCents,
+          durationInDays: parsed.data.durationInDays,
+          pixLabel: "",
+          pixPayload: "",
+          status: "published",
+          expiresAt,
+        })
+        .returning({
+          id: raffles.id,
+        });
+
+      logger.info("Create raffle row inserted", {
+        traceId,
+        raffleId: createdRaffle.id,
+      });
+
+      const [createdItem] = await tx
+        .insert(raffleItems)
+        .values({
+          raffleId: createdRaffle.id,
+          name: parsed.data.itemName.trim(),
+        })
+        .returning({
+          id: raffleItems.id,
+        });
+
+      logger.info("Create raffle item inserted", {
+        traceId,
+        itemId: createdItem.id,
+      });
+
+      await tx.insert(raffleItemImages).values(
+        parsed.data.images.map((imageUrl, index) => ({
+          raffleItemId: createdItem.id,
+          imageUrl,
+          isRealItemImage: index === 0,
+          sortOrder: index,
+        })),
+      );
+
+      logger.info("Create raffle images inserted", {
+        traceId,
+        imageCount: parsed.data.images.length,
+      });
+
+      return createdRaffle.id;
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/");
+
+    logger.info("Create raffle finished", {
+      traceId,
+      redirectTo: `/admin/rifas/${createdRaffleId}`,
+    });
+
+    return {
+      status: "success",
+      message: "Rifa criada com sucesso.",
+      redirectTo: `/admin/rifas/${createdRaffleId}`,
+    };
+  } catch (error) {
+    logger.error("Failed to create raffle", {
+      traceId,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+
+    return {
+      status: "error",
+      message:
+        process.env.NODE_ENV === "development" && error instanceof Error
+          ? `Nao foi possivel salvar a rifa: ${error.message}`
+          : "Nao foi possivel salvar a rifa agora. Confira os campos e tente novamente.",
+    };
+  }
 }

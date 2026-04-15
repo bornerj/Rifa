@@ -6,6 +6,7 @@ type TicketGridProps = {
     ticketNumber: string;
     paymentStatus: string;
     participantName: string;
+    participantEmail?: string;
     participantPhone: string;
     reservationStatus: string;
     reservedAt: Date;
@@ -44,7 +45,7 @@ export function TicketGrid({
           </div>
           <p className="mt-3 text-3xl font-black tracking-[-0.05em] text-ink">{ticket.ticketNumber}</p>
           <p className="mt-3 text-sm font-semibold text-ink">{ticket.participantName}</p>
-          <p className="text-xs text-slate-600">{ticket.participantPhone}</p>
+          <p className="text-xs text-slate-600">{ticket.participantEmail ?? ticket.participantPhone}</p>
           {winningTicketId === ticket.ticketId ? (
             <p className="mt-3 text-sm font-semibold text-amber-700">Cota vencedora</p>
           ) : null}

@@ -4,23 +4,18 @@ import { randomInt } from "node:crypto";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { and, desc, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { requireConfirmedAdmin } from "@/features/auth/session";
-import { reserveQuotaSchema, requestOtpSchema } from "@/features/participants/schemas";
-import { sendOtpMessage } from "@/features/participants/sms";
+import { reserveQuotaSchema } from "@/features/participants/schemas";
 import {
   createAuditReference,
-  generateOtpCode,
   generateTicketNumber,
-  hashOtpCode,
   normalizeBrazilPhone,
-  verifyOtpCode,
 } from "@/features/participants/utils";
 import { getDb } from "@/server/db";
 import {
   draws,
-  otpChallenges,
   participants,
   quotaReservations,
   quotaTickets,
@@ -30,57 +25,10 @@ import {
 export type ParticipantActionState = {
   status: "idle" | "error" | "success";
   message?: string;
-  previewCode?: string;
   reservationId?: string;
+  ticketNumbers?: string[];
+  totalAmountInCents?: number;
 };
-
-const initialState: ParticipantActionState = {
-  status: "idle",
-};
-
-export { initialState as initialParticipantActionState };
-
-export async function requestOtpAction(
-  _prevState: ParticipantActionState,
-  formData: FormData,
-): Promise<ParticipantActionState> {
-  const parsed = requestOtpSchema.safeParse({
-    raffleId: formData.get("raffleId"),
-    name: formData.get("name"),
-    phone: formData.get("phone"),
-  });
-
-  if (!parsed.success) {
-    return {
-      status: "error",
-      message: parsed.error.issues[0]?.message ?? "Nao foi possivel solicitar o codigo.",
-    };
-  }
-
-  const db = getDb();
-  const normalizedPhone = normalizeBrazilPhone(parsed.data.phone);
-  const otpCode = generateOtpCode();
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 10);
-
-  await db.insert(otpChallenges).values({
-    phoneE164: normalizedPhone,
-    codeHash: hashOtpCode(otpCode),
-    expiresAt,
-  });
-
-  const delivery = await sendOtpMessage({
-    phone: normalizedPhone,
-    code: otpCode,
-  });
-
-  return {
-    status: "success",
-    message: delivery.delivered
-      ? "Codigo enviado com sucesso. Confira seu telefone."
-      : "Codigo gerado em modo de preview. Use o codigo abaixo para continuar.",
-    previewCode: delivery.previewCode,
-  };
-}
 
 export async function reserveQuotaAction(
   _prevState: ParticipantActionState,
@@ -89,8 +37,8 @@ export async function reserveQuotaAction(
   const parsed = reserveQuotaSchema.safeParse({
     raffleId: formData.get("raffleId"),
     name: formData.get("name"),
+    email: formData.get("email"),
     phone: formData.get("phone"),
-    otpCode: formData.get("otpCode"),
     quantity: formData.get("quantity"),
   });
 
@@ -103,54 +51,7 @@ export async function reserveQuotaAction(
 
   const db = getDb();
   const normalizedPhone = normalizeBrazilPhone(parsed.data.phone);
-
-  const [challenge] = await db
-    .select({
-      id: otpChallenges.id,
-      codeHash: otpChallenges.codeHash,
-      expiresAt: otpChallenges.expiresAt,
-      verifiedAt: otpChallenges.verifiedAt,
-      attempts: otpChallenges.attempts,
-    })
-    .from(otpChallenges)
-    .where(eq(otpChallenges.phoneE164, normalizedPhone))
-    .orderBy(desc(otpChallenges.createdAt))
-    .limit(1);
-
-  if (!challenge) {
-    return {
-      status: "error",
-      message: "Solicite o codigo OTP antes de reservar as cotas.",
-    };
-  }
-
-  if (challenge.verifiedAt) {
-    return {
-      status: "error",
-      message: "Esse codigo ja foi utilizado. Solicite um novo OTP.",
-    };
-  }
-
-  if (challenge.expiresAt.getTime() < Date.now()) {
-    return {
-      status: "error",
-      message: "Seu codigo expirou. Gere outro para continuar.",
-    };
-  }
-
-  if (!verifyOtpCode(parsed.data.otpCode, challenge.codeHash)) {
-    await db
-      .update(otpChallenges)
-      .set({
-        attempts: challenge.attempts + 1,
-      })
-      .where(eq(otpChallenges.id, challenge.id));
-
-    return {
-      status: "error",
-      message: "Codigo invalido. Confira os 6 digitos enviados.",
-    };
-  }
+  const normalizedEmail = parsed.data.email.trim().toLowerCase();
 
   const [raffle] = await db
     .select({
@@ -171,13 +72,13 @@ export async function reserveQuotaAction(
     };
   }
 
-  await db.transaction(async (tx) => {
+  const reservationResult = await db.transaction(async (tx) => {
     const [existingParticipant] = await tx
       .select({
         id: participants.id,
       })
       .from(participants)
-      .where(and(eq(participants.raffleId, raffle.id), eq(participants.phoneE164, normalizedPhone)))
+      .where(and(eq(participants.raffleId, raffle.id), eq(participants.email, normalizedEmail)))
       .limit(1);
 
     const participantId =
@@ -188,8 +89,8 @@ export async function reserveQuotaAction(
           .values({
             raffleId: raffle.id,
             name: parsed.data.name.trim(),
+            email: normalizedEmail,
             phoneE164: normalizedPhone,
-            phoneVerifiedAt: new Date(),
           })
           .returning({
             id: participants.id,
@@ -243,58 +144,22 @@ export async function reserveQuotaAction(
 
     await tx.insert(quotaTickets).values(ticketsToCreate);
 
-    await tx
-      .update(otpChallenges)
-      .set({
-        verifiedAt: new Date(),
-      })
-      .where(eq(otpChallenges.id, challenge.id));
+    return {
+      reservationId: reservation.id,
+      ticketNumbers: ticketsToCreate.map((ticket) => ticket.ticketNumber),
+      totalAmountInCents: raffle.quotaPriceInCents * parsed.data.quantity,
+    };
   });
 
   revalidatePath(`/r/${raffle.slug}`);
   return {
     status: "success",
-    message: "Cotas reservadas com sucesso. Agora siga para o pagamento via PIX.",
+    message:
+      "Cotas geradas com sucesso. Pague o PIX e aguarde o email de confirmacao apos a validacao do admin.",
+    reservationId: reservationResult.reservationId,
+    ticketNumbers: reservationResult.ticketNumbers,
+    totalAmountInCents: reservationResult.totalAmountInCents,
   };
-}
-
-export async function confirmPaymentAction(formData: FormData): Promise<void> {
-  const admin = await requireConfirmedAdmin();
-  const raffleId = String(formData.get("raffleId"));
-  const reservationId = String(formData.get("reservationId"));
-
-  const db = getDb();
-  const [raffle] = await db
-    .select({
-      id: raffles.id,
-      slug: raffles.slug,
-    })
-    .from(raffles)
-    .where(and(eq(raffles.id, raffleId), eq(raffles.createdByUserId, admin.id)))
-    .limit(1);
-
-  if (!raffle) {
-    redirect("/admin");
-  }
-
-  await db.transaction(async (tx) => {
-    await tx
-      .update(quotaReservations)
-      .set({
-        status: "paid",
-      })
-      .where(eq(quotaReservations.id, reservationId));
-
-    await tx
-      .update(quotaTickets)
-      .set({
-        paymentStatus: "confirmed",
-      })
-      .where(eq(quotaTickets.reservationId, reservationId));
-  });
-
-  revalidatePath(`/admin/rifas/${raffleId}`);
-  revalidatePath(`/r/${raffle.slug}`);
 }
 
 export async function runDrawAction(formData: FormData): Promise<void> {

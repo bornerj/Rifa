@@ -10,7 +10,7 @@
 [project]
 name        = "Rifa"
 version     = "1.0"
-description = "Plataforma web mobile-first para criacao, gestao e sorteio de rifas com validacao por OTP e pagamento via PIX."
+description = "Plataforma web mobile-first para criacao, gestao e sorteio de rifas com reserva sem OTP, confirmacao por email e pagamento via PIX."
 type        = "web-app"
 language    = "pt-BR"
 
@@ -96,9 +96,13 @@ vars = [
   "DATABASE_URL",
   "AUTH_SECRET",
   "APP_URL",
-  "RESEND_API_KEY",
-  "SMS_PROVIDER_API_KEY",
-  "SMS_PROVIDER_SENDER",
+  "BREVO_SMTP_HOST",
+  "BREVO_SMTP_PORT",
+  "BREVO_SMTP_USER",
+  "BREVO_SMTP_KEY",
+  "BREVO_SENDER_EMAIL",
+  "BREVO_SENDER_NAME",
+  "BLOB_READ_WRITE_TOKEN",
 ]
 
 [environments.neon]
@@ -119,15 +123,15 @@ env_vars = []
 
 [[integrations]]
 name     = "Transactional Email Provider"
-purpose  = "Confirmacao do email do administrador por link magico"
+purpose  = "Confirmacao do email do administrador por link magico e envio de recibo ao participante apos PIX confirmado"
 docs     = ""
-env_vars = ["RESEND_API_KEY"]
+env_vars = ["BREVO_SMTP_HOST", "BREVO_SMTP_PORT", "BREVO_SMTP_USER", "BREVO_SMTP_KEY", "BREVO_SENDER_EMAIL", "BREVO_SENDER_NAME"]
 
 [[integrations]]
-name     = "SMS OTP Provider"
-purpose  = "Envio de codigo de 6 digitos para validacao do telefone do participante"
+name     = "Vercel Blob"
+purpose  = "Armazenamento persistente das imagens enviadas do objeto da rifa"
 docs     = ""
-env_vars = ["SMS_PROVIDER_API_KEY", "SMS_PROVIDER_SENDER"]
+env_vars = ["BLOB_READ_WRITE_TOKEN"]
 
 # ═══════════════════════════════════════
 # DEV TOOLS — Local environment only, never go to production
@@ -136,7 +140,7 @@ env_vars = ["SMS_PROVIDER_API_KEY", "SMS_PROVIDER_SENDER"]
 [tools.dev.local]
 purpose = "Desenvolvimento local do app Next.js e execucao dos scripts do kernel"
 setup = "Node.js 20+, npm 10+, banco Neon configurado e variaveis no .env.local"
-note = "A maquina atual ainda precisa subir de Node.js 18 para 20+ antes do scaffold"
+note = "Ambiente local usa Node.js 20+ e npm 10+."
 
 # ═══════════════════════════════════════
 # AI CONTEXT REFERENCE — Do not remove this section

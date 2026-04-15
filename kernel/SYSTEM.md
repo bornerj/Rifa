@@ -13,7 +13,8 @@ Must be reviewed BEFORE the start of the project.
 - Database target: Neon Postgres.
 - E2E Tests: Playwright.
 - Auth: admin with email/password and email confirmation by magic link.
-- Participant verification: 6-digit OTP by SMS in MVP.
+- Participant flow: no OTP, SMS, or WhatsApp verification in the revised MVP.
+- Participant receipt: transactional email via Brevo after manual PIX confirmation by the raffle admin.
 - Payments: PIX QR Code with manual payment confirmation by the raffle admin in MVP.
 
 ## Code Style
@@ -49,8 +50,8 @@ try {
 - Validate all input with an explicit Zod schema.
 - Assume all external input is malicious.
 - Use parameterized ORM/database queries only; never concatenate user input in SQL.
-- Rate-limit OTP sending and verification by phone and IP when possible.
-- Hash OTP codes at rest.
+- Rate-limit public reservation creation by email, phone, raffle, and IP when possible.
+- Do not persist secrets, tokens, email provider responses, or sensitive participant data in logs.
 
 ## Technical Architecture
 - Business rules and functions live in server-side modules behind Next.js Route Handlers and Server Actions.
@@ -64,7 +65,7 @@ try {
 - All input must have an explicit Zod schema.
 - Messages should be normalized to pt-BR.
 - Phone and email validations must be consistent between backend and frontend.
-- Brazilian phone numbers must be normalized before OTP dispatch and persistence.
+- Brazilian phone numbers must be normalized before participant reservation persistence.
 
 ## Drizzle + PostgreSQL
 - Drizzle is the only database access layer in the backend.
@@ -77,7 +78,7 @@ try {
 - Frontend consumes server actions or route handlers; no direct database queries.
 - The participant purchase flow must prioritize mobile screens first.
 - Public raffle pages must show quota value clearly before user input.
-- OTP, quota selection, PIX view, and payment instructions must work well in one-hand mobile usage.
+- Participant identity, quota selection, PIX view, generated numbers, and payment instructions must work well in one-hand mobile usage.
 - The quota grid must render one entry per sold quota, even when the same participant has multiple quotas.
 
 ## Payments (PIX)
@@ -87,15 +88,19 @@ try {
 - The MVP payment confirmation flow is manual and restricted to the raffle admin.
 - Future automatic reconciliation must be added behind explicit provider/webhook contracts.
 
-## Authentication and Verification
+## Authentication, Reservation, and Email
 - Admin accounts require email/password plus email confirmation before accessing protected raffle operations.
-- Participant phone verification uses 6-digit OTP codes with expiration and attempt limits.
-- OTP sending logic must be provider-abstracted to allow future SMS/WhatsApp swap.
+- Participants reserve quotas by providing name, email, phone, and quota quantity without OTP.
+- Generated ticket numbers must be shown immediately after reservation.
+- Payment confirmation email must only be sent after the admin manually confirms the PIX as received.
+- Email sending logic must be provider-abstracted, with Brevo as the current provider.
 
 ## File and Media Rules
 - Each raffle item supports up to 3 images.
 - Enforce the 3-image limit in validation and business rules.
 - Prefer storing canonical media references rather than binary payloads in the database.
+- At least one image can be marked as the real item image with the label "Imagem real do objeto".
+- Upload storage must be persistent in production; serverless local filesystem must not be treated as durable storage on Vercel.
 
 ## Draw Rules
 - Only the creator/admin of the raffle can execute the draw.
@@ -120,4 +125,4 @@ try {
 - Cover edge cases and error states.
 - Use descriptive test names.
 - Prefer integration tests when they deliver more practical confidence.
-- Cover raffle creation, OTP confirmation, quota reservation, manual payment confirmation, and admin-only draw authorization.
+- Cover raffle creation, quota reservation without OTP, manual payment confirmation, Brevo receipt dispatch, and admin-only draw authorization.

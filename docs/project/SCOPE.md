@@ -1,6 +1,6 @@
 # Escopo do Projeto Rifa
 
-Last updated: 2026-04-14
+Last updated: 2026-04-15
 
 ## Objetivo
 
@@ -19,13 +19,16 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
   - identificacao PIX e payload para QR Code
 - Cadastro do objeto da rifa com:
   - nome
-  - ate 3 imagens por URL no MVP
+  - ate 3 imagens
+  - ao menos uma imagem real do objeto com label proprio e upload gerenciado pelo sistema
 - Fluxo publico do participante com:
   - nome
+  - email para recebimento do recibo e dos numeros da rifa
   - telefone celular com DDD
-  - validacao do telefone por OTP de 6 digitos
   - escolha da quantidade de cotas
   - geracao de numeros aleatorios de 5 digitos
+  - exibicao imediata dos numeros gerados
+  - aviso de que a confirmacao por email sera enviada apos validacao manual do PIX
   - exibicao do valor total
   - exibicao do QR Code PIX
 - Persistencia de:
@@ -37,8 +40,9 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
   - status de pagamento
 - Grid publica com uma entrada por cota vendida, incluindo repeticao do mesmo participante quando ele tiver varias cotas
 - Painel administrativo da rifa com:
-  - visualizacao das reservas
-  - confirmacao manual de pagamento
+  - visualizacao das reservas/participantes em grid operacional
+  - confirmacao manual de pagamento apos recebimento do PIX
+  - envio de recibo/confirmacao por email via Brevo com os numeros da rifa
   - execucao de sorteio
 - Sorteio restrito ao admin criador da rifa
 - Registro auditavel do sorteio com vencedor persistido no banco
@@ -51,15 +55,17 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
 - As entradas devem ser validadas com Zod
 - A persistencia deve usar ORM
 - A aplicacao deve adotar protecao contra SQL injection por meio de consultas parametrizadas e validacao de entrada
+- O participante nao deve passar por OTP, SMS ou WhatsApp no MVP revisado
+- Brevo sera usado para email transacional de recibo/confirmacao apos pagamento confirmado pelo admin
 
 ## Fora do Escopo Inicial
 
-- Upload de imagens para storage proprio
 - Confirmacao automatica de pagamento PIX
-- WhatsApp como canal principal de verificacao se exigir integracao mais pesada no MVP
+- OTP, SMS ou WhatsApp como canal de confirmacao do participante
 - Marketplace publico de rifas
 - Multi-admin por rifa ou por organizacao
 - Integracoes de antifraude avancadas
+- Upload local em filesystem serverless como solucao definitiva de producao
 
 ## Sugestoes Incorporadas na Definicao
 
@@ -67,6 +73,8 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
 - Usar Neon Postgres com Drizzle ORM no lugar de uma opcao mais pesada para serverless
 - Salvar payload do PIX em vez de imagem fixa de QR Code
 - Tratar o sorteio como selecao auditavel no banco, deixando a animacao apenas como experiencia visual
+- Remover a verificacao por OTP para reduzir atrito do participante
+- Enviar confirmacao e recibo por email somente apos confirmacao manual do PIX recebido
 
 ## Referencias
 
@@ -74,5 +82,6 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
 - `memory/decisions/DECISION-002.md`
 - `memory/decisions/DECISION-003.md`
 - `memory/decisions/DECISION-004.md`
+- `memory/decisions/DECISION-005.md`
 - `docs/project/PROJECT_OVERVIEW.md`
 - `docs/project/REQUIREMENTS.md`
