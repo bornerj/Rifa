@@ -31,6 +31,7 @@
 - Confirmacao por email via Brevo validada com sucesso
 - Upload da imagem real agora substitui e persiste automaticamente a imagem principal do item
 - Pagina inicial convertida em landing page comercial com destaque para a rifa publicada mais recente
+- Painel admin permite editar nome, proposito, beneficiario e valor da cota da rifa
 
 ## In Progress Now
 
@@ -51,4 +52,4 @@
 
 ## Immediate Next Step
 
-- Publicar ajustes finais no GitHub/Vercel e validar landing + upload em producao
+- Publicar ajustes finais no GitHub/Vercel e validar landing, upload e edicao de valor da cota em producao

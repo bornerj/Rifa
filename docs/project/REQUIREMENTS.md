@@ -18,6 +18,8 @@ Last updated: 2026-04-15
 - [ ] FR-013: Apos o participante confirmar a participacao, o sistema deve gerar os numeros, mostrar os numeros na tela e informar que a confirmacao sera enviada por email apos confirmacao do PIX.
 - [ ] FR-014: O painel administrativo deve ter uma area em grid com os participantes/reservas e uma acao de confirmar pagamento.
 - [ ] FR-015: Ao confirmar manualmente o pagamento, o sistema deve enviar email via Brevo ao participante com recibo, confirmacao do pagamento e os numeros da rifa.
+- [ ] FR-016: O administrador deve conseguir editar nome, proposito, beneficiario e valor da cota da rifa apos a criacao.
+- [ ] FR-017: Alteracoes no valor da cota devem valer apenas para novas reservas, preservando os valores ja registrados nas reservas existentes.
 
 ## Non-Functional Requirements
 - [ ] NFR-001 Performance: O fluxo principal deve ser otimizado para uso em tela de celular e conexoes moveis.

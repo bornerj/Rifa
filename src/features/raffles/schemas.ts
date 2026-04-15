@@ -35,6 +35,13 @@ export const updateRafflePixSchema = z.object({
   pixPayload: z.string().trim().min(10, "Informe o payload copia e cola do PIX").max(2000),
 });
 
+export const updateRaffleDetailsSchema = z.object({
+  name: z.string().trim().min(3, "Informe o nome da rifa").max(180),
+  purpose: z.string().trim().min(10, "Explique o proposito da rifa").max(1000),
+  beneficiary: z.string().trim().min(3, "Informe o beneficiario").max(180),
+  quotaPriceInCents: quotaPriceSchema,
+});
+
 export const updateRaffleItemSchema = z.object({
   itemName: z.string().trim().min(3, "Informe o nome do item da rifa").max(180),
   images: z

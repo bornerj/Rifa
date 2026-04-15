@@ -65,6 +65,12 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     pixLabel: "",
     pixPayload: "",
   });
+  const [detailsForm, setDetailsForm] = useState({
+    name: "",
+    purpose: "",
+    beneficiary: "",
+    quotaPriceInCents: "",
+  });
   const [itemForm, setItemForm] = useState({
     itemName: "",
     images: ["", "", ""],
@@ -86,6 +92,12 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     setPixForm({
       pixLabel: payload.raffle.pixLabel,
       pixPayload: payload.raffle.pixPayload,
+    });
+    setDetailsForm({
+      name: payload.raffle.name,
+      purpose: payload.raffle.purpose,
+      beneficiary: payload.raffle.beneficiary,
+      quotaPriceInCents: (payload.raffle.quotaPriceInCents / 100).toFixed(2).replace(".", ","),
     });
     setItemForm({
       itemName: payload.raffle.itemName ?? "",
@@ -175,6 +187,23 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     await fetchDetails();
   }
 
+  async function saveRaffleDetails(): Promise<void> {
+    setError(null);
+    const response = await fetch(`/api/admin/raffles/${raffleId}/details`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(detailsForm),
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json()) as { message?: string };
+      setError(payload.message ?? "Nao foi possivel salvar os dados da rifa.");
+      return;
+    }
+
+    await fetchDetails();
+  }
+
   async function savePixConfiguration(): Promise<void> {
     setError(null);
     const response = await fetch(`/api/admin/raffles/${raffleId}/pix`, {
@@ -241,6 +270,71 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
           <div className="mt-5 rounded-[1.5rem] bg-slate-50 p-4">
             <h2 className="text-lg font-bold text-ink">Proposito</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">{raffle.purpose}</p>
+          </div>
+
+          <div className="mt-5 rounded-[1.5rem] bg-slate-50 p-4">
+            <h2 className="text-lg font-bold text-ink">Dados da rifa</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              O valor editado aqui passa a valer para novas reservas. Reservas ja criadas preservam
+              o valor original combinado.
+            </p>
+            <div className="mt-4 grid gap-3">
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-700">Nome da rifa</span>
+                <input
+                  value={detailsForm.name}
+                  onChange={(event) => {
+                    setDetailsForm((current) => ({ ...current, name: event.target.value }));
+                  }}
+                  className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500"
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-700">Beneficiario</span>
+                <input
+                  value={detailsForm.beneficiary}
+                  onChange={(event) => {
+                    setDetailsForm((current) => ({ ...current, beneficiary: event.target.value }));
+                  }}
+                  className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500"
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-700">Valor da cota</span>
+                <input
+                  value={detailsForm.quotaPriceInCents}
+                  onChange={(event) => {
+                    setDetailsForm((current) => ({
+                      ...current,
+                      quotaPriceInCents: event.target.value,
+                    }));
+                  }}
+                  placeholder="10,00"
+                  inputMode="decimal"
+                  className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500"
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-700">Proposito</span>
+                <textarea
+                  value={detailsForm.purpose}
+                  onChange={(event) => {
+                    setDetailsForm((current) => ({ ...current, purpose: event.target.value }));
+                  }}
+                  rows={4}
+                  className="block min-h-28 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  void saveRaffleDetails();
+                }}
+                className="rounded-2xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white"
+              >
+                Salvar dados da rifa
+              </button>
+            </div>
           </div>
 
           <div className="mt-5 rounded-[1.5rem] bg-slate-50 p-4">

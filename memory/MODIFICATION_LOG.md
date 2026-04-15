@@ -739,3 +739,35 @@ Last completed step:
 
 Next step:
 - Push changes and redeploy Vercel to validate the landing and upload behavior in production.
+
+## 2026-04-15 — Admin raffle details editing
+
+Context/objective:
+- Add a way for the raffle admin to edit the raffle itself after creation, including the quota price.
+- Preserve financial integrity by making price changes apply only to future reservations.
+
+Files changed:
+- `src/features/raffles/schemas.ts`
+- `src/app/api/admin/raffles/[id]/details/route.ts`
+- `src/features/raffles/components/admin-raffle-details-client.tsx`
+- `docs/project/REQUIREMENTS.md`
+- `docs/project/SCOPE.md`
+- `memory/progress.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validations executed:
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+
+Result:
+- Admin raffle details page now includes a "Dados da rifa" form.
+- Admin can edit raffle name, purpose, beneficiary, and quota value.
+- The new quota value is stored on `raffles.quotaPriceInCents` and applies to future reservations.
+- Existing reservations keep their persisted `unitPriceInCents` and `totalAmountInCents`.
+
+Last completed step:
+- Local build validation completed for raffle details editing.
+
+Next step:
+- Push changes and redeploy Vercel to validate editing the quota value in production.

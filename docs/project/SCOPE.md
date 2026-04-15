@@ -40,6 +40,7 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
   - status de pagamento
 - Grid publica com uma entrada por cota vendida, incluindo repeticao do mesmo participante quando ele tiver varias cotas
 - Painel administrativo da rifa com:
+  - edicao de nome, proposito, beneficiario e valor da cota
   - visualizacao das reservas/participantes em grid operacional
   - confirmacao manual de pagamento apos recebimento do PIX
   - envio de recibo/confirmacao por email via Brevo com os numeros da rifa
@@ -57,6 +58,7 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
 - A aplicacao deve adotar protecao contra SQL injection por meio de consultas parametrizadas e validacao de entrada
 - O participante nao deve passar por OTP, SMS ou WhatsApp no MVP revisado
 - Brevo sera usado para email transacional de recibo/confirmacao apos pagamento confirmado pelo admin
+- Alteracao de valor da cota vale somente para reservas futuras; reservas existentes preservam valor unitario e total ja persistidos
 
 ## Fora do Escopo Inicial
 
