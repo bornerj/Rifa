@@ -24,22 +24,25 @@ export function ParticipantFlow({
   );
 
   return (
-    <section className="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-raffle">
+    <section id="participar" className="scroll-mt-6 rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-raffle">
       <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-700">
           Participar da rifa
         </p>
         <h2 className="text-2xl font-black tracking-[-0.04em] text-ink">
-          Escolha suas cotas agora
+          Garanta sua cota agora
         </h2>
         <p className="text-sm leading-6 text-slate-600">
-          Informe seus dados, confirme a quantidade e veja seus numeros na hora. O recibo chega por
+          Informe seus dados, confirme a participacao e veja seu numero na hora. O recibo chega por
           email depois que o admin confirmar o PIX recebido.
         </p>
       </div>
 
       <div className="mt-6">
-        <form action={reservationFormAction} className="space-y-4 rounded-[1.5rem] bg-slate-50 p-4">
+        <form
+          action={reservationFormAction}
+          className="space-y-4 rounded-[1.5rem] bg-slate-50 p-4"
+        >
           <input type="hidden" name="raffleId" value={raffleId} />
           <h3 className="text-lg font-bold text-ink">Dados do participante</h3>
           <Field
@@ -67,13 +70,16 @@ export function ParticipantFlow({
           <div className="rounded-2xl bg-white px-4 py-3 text-sm text-slate-600">
             Cada cota custa <strong>{formatCurrencyFromCents(quotaPriceInCents)}</strong>.
           </div>
-          <Field name="quantity" label="Quantidade de cotas" type="number" placeholder="1" />
           <button
             type="submit"
             disabled={reservationPending}
             className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white"
           >
-            {reservationPending ? "Gerando numeros..." : "Confirmar participacao"}
+            {reservationPending
+              ? "Gerando numero..."
+              : reservationState.status === "success"
+                ? "Realizar nova cota"
+                : "Confirmar participacao"}
           </button>
         </form>
       </div>
@@ -88,7 +94,7 @@ export function ParticipantFlow({
           {reservationState.ticketNumbers?.length ? (
             <div className="mt-4 rounded-2xl bg-white p-4 text-ink">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-700">
-                Seus numeros
+                Seu numero
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {reservationState.ticketNumbers.map((ticketNumber) => (

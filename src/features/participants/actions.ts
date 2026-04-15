@@ -39,7 +39,6 @@ export async function reserveQuotaAction(
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone"),
-    quantity: formData.get("quantity"),
   });
 
   if (!parsed.success) {
@@ -50,6 +49,7 @@ export async function reserveQuotaAction(
   }
 
   const db = getDb();
+  const quantity = 1;
   const normalizedPhone = normalizeBrazilPhone(parsed.data.phone);
   const normalizedEmail = parsed.data.email.trim().toLowerCase();
 
@@ -102,9 +102,9 @@ export async function reserveQuotaAction(
       .values({
         raffleId: raffle.id,
         participantId,
-        quantity: parsed.data.quantity,
+        quantity,
         unitPriceInCents: raffle.quotaPriceInCents,
-        totalAmountInCents: raffle.quotaPriceInCents * parsed.data.quantity,
+        totalAmountInCents: raffle.quotaPriceInCents * quantity,
         status: "awaiting_payment",
       })
       .returning({
@@ -127,7 +127,7 @@ export async function reserveQuotaAction(
       unitPriceInCents: number;
     }> = [];
 
-    for (let index = 0; index < parsed.data.quantity; index += 1) {
+    for (let index = 0; index < quantity; index += 1) {
       let ticketNumber = generateTicketNumber();
       while (usedTicketNumbers.has(ticketNumber)) {
         ticketNumber = generateTicketNumber();
@@ -147,7 +147,7 @@ export async function reserveQuotaAction(
     return {
       reservationId: reservation.id,
       ticketNumbers: ticketsToCreate.map((ticket) => ticket.ticketNumber),
-      totalAmountInCents: raffle.quotaPriceInCents * parsed.data.quantity,
+      totalAmountInCents: raffle.quotaPriceInCents * quantity,
     };
   });
 
@@ -155,7 +155,7 @@ export async function reserveQuotaAction(
   return {
     status: "success",
     message:
-      "Cotas geradas com sucesso. Pague o PIX e aguarde o email de confirmacao apos a validacao do admin.",
+      "Cota gerada com sucesso. Pague o PIX e aguarde o email de confirmacao apos a validacao do admin.",
     reservationId: reservationResult.reservationId,
     ticketNumbers: reservationResult.ticketNumbers,
     totalAmountInCents: reservationResult.totalAmountInCents,

@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 
 import { ParticipantFlow } from "@/features/participants/components/participant-flow";
 import { ImageShowcaseGrid } from "@/features/raffles/components/image-showcase-grid";
 import { PixPaymentCard } from "@/features/raffles/components/pix-payment-card";
+import { ShareRaffleButton } from "@/features/raffles/components/share-raffle-button";
 import { TicketGrid } from "@/features/participants/components/ticket-grid";
 import { getPublicRaffleBySlug } from "@/features/raffles/repository";
 import { formatCurrencyFromCents, formatDate } from "@/lib/formatters";
@@ -45,9 +45,12 @@ export default async function PublicRafflePage({
     <main className="min-h-screen bg-paper bg-raffle-glow px-5 py-8 text-ink sm:px-8">
       <div className="mx-auto max-w-5xl space-y-6">
         <header className="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-raffle">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-700">
-            Rifa publicada
-          </p>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-700">
+              Rifa publicada
+            </p>
+            <ShareRaffleButton />
+          </div>
           <h1 className="mt-3 text-4xl font-black tracking-[-0.04em]">{raffle.name}</h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">{raffle.purpose}</p>
         </header>
@@ -102,12 +105,12 @@ export default async function PublicRafflePage({
               </div>
             )}
 
-            <Link
-              href="/cadastrar"
+            <a
+              href="#participar"
               className="mt-5 inline-flex rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white"
             >
-              Quero criar uma rifa assim
-            </Link>
+              Realizar nova cota
+            </a>
           </aside>
         </section>
 

@@ -5,7 +5,6 @@ export const reserveQuotaSchema = z.object({
   name: z.string().min(3, "Informe seu nome").max(180),
   email: z.string().email("Informe um e-mail valido").max(255),
   phone: z.string().min(10, "Informe o telefone com DDD").max(20),
-  quantity: z.coerce.number().int().min(1).max(50),
 });
 
 export type ReserveQuotaInput = z.infer<typeof reserveQuotaSchema>;
