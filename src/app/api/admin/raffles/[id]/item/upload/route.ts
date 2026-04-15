@@ -1,10 +1,10 @@
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import { requireConfirmedAdmin } from "@/features/auth/session";
 import { getDb } from "@/server/db";
-import { raffles } from "@/server/db/schema";
+import { raffleItemImages, raffleItems, raffles } from "@/server/db/schema";
 
 type RouteContext = {
   params: Promise<{
@@ -21,12 +21,13 @@ export async function POST(request: Request, context: RouteContext): Promise<Nex
 
   const db = getDb();
   const [raffle] = await db
-    .select({ id: raffles.id })
+    .select({ id: raffles.id, itemId: raffleItems.id })
     .from(raffles)
+    .leftJoin(raffleItems, eq(raffleItems.raffleId, raffles.id))
     .where(and(eq(raffles.id, id), eq(raffles.createdByUserId, admin.id)))
     .limit(1);
 
-  if (!raffle) {
+  if (!raffle || !raffle.itemId) {
     return NextResponse.json({ message: "Rifa nao encontrada." }, { status: 404 });
   }
 
@@ -49,6 +50,42 @@ export async function POST(request: Request, context: RouteContext): Promise<Nex
   const blob = await put(`raffles/${raffle.id}/real-item-image.${extension}`, file, {
     access: "public",
     addRandomSuffix: true,
+  });
+
+  const existingImages = await db
+    .select({
+      id: raffleItemImages.id,
+      sortOrder: raffleItemImages.sortOrder,
+    })
+    .from(raffleItemImages)
+    .where(eq(raffleItemImages.raffleItemId, raffle.itemId))
+    .orderBy(asc(raffleItemImages.sortOrder));
+
+  await db.transaction(async (tx) => {
+    await tx
+      .update(raffleItemImages)
+      .set({ isRealItemImage: false })
+      .where(eq(raffleItemImages.raffleItemId, raffle.itemId as string));
+
+    const firstImage = existingImages[0];
+    if (firstImage) {
+      await tx
+        .update(raffleItemImages)
+        .set({
+          imageUrl: blob.url,
+          isRealItemImage: true,
+          sortOrder: 0,
+        })
+        .where(eq(raffleItemImages.id, firstImage.id));
+      return;
+    }
+
+    await tx.insert(raffleItemImages).values({
+      raffleItemId: raffle.itemId as string,
+      imageUrl: blob.url,
+      isRealItemImage: true,
+      sortOrder: 0,
+    });
   });
 
   return NextResponse.json({ imageUrl: blob.url });

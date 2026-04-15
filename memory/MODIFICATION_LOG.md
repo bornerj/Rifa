@@ -707,3 +707,35 @@ Last completed step:
 
 Next step:
 - Configure/test Vercel Blob for real item image upload and continue Vercel deployment validation.
+
+## 2026-04-15 — Landing page and real image upload persistence
+
+Context/objective:
+- Fix the admin upload behavior so the uploaded real item image replaces the first image immediately and persists in the database.
+- Improve the home page so it reads like a public raffle landing page instead of a technical MVP page.
+- Use the latest published raffle as the landing highlight card, including its image and quota value.
+
+Files changed:
+- `src/app/api/admin/raffles/[id]/item/upload/route.ts`
+- `src/features/raffles/components/admin-raffle-details-client.tsx`
+- `src/features/raffles/repository.ts`
+- `src/app/page.tsx`
+- `memory/progress.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validations executed:
+- Reviewed `https://www.rifeme.com.br/` for high-level content direction without copying text
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+
+Result:
+- Uploading the real item image now updates the first `raffle_item_images` row or inserts it when none exists.
+- The admin panel reloads details after upload, so the uploaded image appears immediately.
+- The landing page now fetches the latest published raffle and displays it with value, beneficiary, image, and participation CTA.
+
+Last completed step:
+- Local build validation completed for landing and upload persistence changes.
+
+Next step:
+- Push changes and redeploy Vercel to validate the landing and upload behavior in production.

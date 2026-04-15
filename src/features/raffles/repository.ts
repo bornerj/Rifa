@@ -30,6 +30,53 @@ export async function getRafflesByAdmin(userId: string) {
     .orderBy(desc(raffles.createdAt));
 }
 
+export async function getLatestPublishedRaffleForLanding() {
+  const db = getDb();
+
+  const [raffle] = await db
+    .select({
+      id: raffles.id,
+      name: raffles.name,
+      slug: raffles.slug,
+      purpose: raffles.purpose,
+      beneficiary: raffles.beneficiary,
+      quotaPriceInCents: raffles.quotaPriceInCents,
+      status: raffles.status,
+      createdAt: raffles.createdAt,
+      expiresAt: raffles.expiresAt,
+      itemName: raffleItems.name,
+      itemId: raffleItems.id,
+    })
+    .from(raffles)
+    .leftJoin(raffleItems, eq(raffleItems.raffleId, raffles.id))
+    .where(eq(raffles.status, "published"))
+    .orderBy(desc(raffles.createdAt))
+    .limit(1);
+
+  if (!raffle) {
+    return null;
+  }
+
+  const [image] = raffle.itemId
+    ? await db
+        .select({
+          imageUrl: raffleItemImages.imageUrl,
+          isRealItemImage: raffleItemImages.isRealItemImage,
+          sortOrder: raffleItemImages.sortOrder,
+        })
+        .from(raffleItemImages)
+        .where(eq(raffleItemImages.raffleItemId, raffle.itemId))
+        .orderBy(desc(raffleItemImages.isRealItemImage), raffleItemImages.sortOrder)
+        .limit(1)
+    : [];
+
+  return {
+    ...raffle,
+    imageUrl: image?.imageUrl ?? null,
+    isRealItemImage: image?.isRealItemImage ?? false,
+  };
+}
+
 export async function getRaffleDetailsByAdmin(raffleId: string, userId: string) {
   const db = getDb();
 

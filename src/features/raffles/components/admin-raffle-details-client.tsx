@@ -154,6 +154,7 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
         nextImages[0] = payload.imageUrl;
         return { ...current, images: nextImages };
       });
+      await fetchDetails();
     } finally {
       setUploadingImage(false);
     }

@@ -29,6 +29,8 @@
 - Repositorio publicado no GitHub
 - Migration `0002_milky_patch` aplicada no banco Neon alvo
 - Confirmacao por email via Brevo validada com sucesso
+- Upload da imagem real agora substitui e persiste automaticamente a imagem principal do item
+- Pagina inicial convertida em landing page comercial com destaque para a rifa publicada mais recente
 
 ## In Progress Now
 
@@ -49,4 +51,4 @@
 
 ## Immediate Next Step
 
-- Testar upload da imagem real com Vercel Blob configurado e concluir deploy Vercel
+- Publicar ajustes finais no GitHub/Vercel e validar landing + upload em producao
