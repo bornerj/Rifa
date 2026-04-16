@@ -57,6 +57,10 @@ export function PixPaymentCard({
         >
           {copied ? "PIX copiado" : "Copiar PIX"}
         </button>
+        <p className="mt-3 text-xs leading-5 text-slate-300">
+          Voce recebera um email confirmando seus dados e o numero do sorteio. Esse processo e
+          feito duas vezes ao dia, nao e automatico. Aguarde um pouco que sera enviado.
+        </p>
       </div>
     </>
   );

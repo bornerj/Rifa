@@ -1,17 +1,17 @@
-# Modification Log
+# Log de Modificacoes
 
-Start date: 2026-04-13
+Data de inicio: 2026-04-13
 
-Use this file for macro operational tracking, according to:
+Use este arquivo para rastreamento macro operacional, conforme:
 - `kernel/RULES.md`
 - `memory/WORKFLOW_MEMORY_PLAYBOOK.md`
 
-## 2026-04-13 — Bootstrap + environment audit
+## 2026-04-13 — Bootstrap e auditoria de ambiente
 
-Context/objective:
-- Execute `kernel/BOOTSTRAP.md` and prepare the local environment for this repository.
+Contexto/objetivo:
+- Executar `kernel/BOOTSTRAP.md` e preparar o ambiente local deste repositorio.
 
-Files checked:
+Arquivos verificados:
 - `kernel/BOOTSTRAP.md`
 - `kernel/project.toml`
 - `kernel/SOUL.md`
@@ -28,94 +28,99 @@ Files checked:
 - `kernel/README.md`
 - `memory/logs/BUILD-HISTORY.md`
 
-Validations executed:
-- Confirmed there is no active plan in `memory/plans/`
-- Confirmed there are no active decisions in `memory/decisions/`
-- Ran `python3 kernel/scripts/session_manager.py status .`
-- Ran `python3 kernel/scripts/checklist.py .`
-- Checked toolchain versions: Node.js, npm, Python, pip, Git
-- Checked preview status with `python3 kernel/scripts/auto_preview.py status`
-- Verified current APT candidate for `nodejs`
+Validacoes executadas:
+- Confirmado que nao havia plano ativo em `memory/plans/`
+- Confirmado que nao havia decisoes ativas em `memory/decisions/`
+- `python3 kernel/scripts/session_manager.py status .`
+- `python3 kernel/scripts/checklist.py .`
+- Checagem das versoes de Node.js, npm, Python, pip e Git
+- `python3 kernel/scripts/auto_preview.py status`
 
-Result:
-- Bootstrap completed successfully.
-- Repository is still in planning/bootstrap stage and does not contain app manifests (`package.json`, `pyproject.toml`, `requirements.txt`, Docker manifests).
-- Local environment is usable for the kernel scripts already present.
-- Main mismatch found: `kernel/SYSTEM.md` requires Node.js 20+, but the machine currently has Node.js 18.19.1 and the configured APT candidate is also 18.19.1.
-- `verify_all.py` was not executed because it requires `--url` and there is no running local app yet.
+Resultado:
+- Bootstrap concluido com sucesso.
+- O repositorio ainda estava em fase de planejamento/bootstrap.
+- O principal desalinhamento encontrado foi Node.js 18 no ambiente, enquanto `kernel/SYSTEM.md` exigia Node.js 20+.
 
-Last completed step:
-- Session bootstrap and local environment audit completed.
+Ultimo passo concluido:
+- Bootstrap de sessao e auditoria local concluídos.
 
-Next step:
-- Define the real project stack/manifests or authorize a Node.js 20+ installation path if this repository will start implementation now.
+Proximo passo:
+- Definir stack/manifests reais do projeto e preparar o inicio da implementacao.
 
 ## 2026-04-13 — START PLAN-0001-rifa-web-platform
 
-Context/objective:
-- Convert the new raffle product request into an execution plan with architecture, agents, skills, and delivery phases.
+Contexto/objetivo:
+- Transformar o pedido do produto em um plano executavel com arquitetura, agentes, skills e fases de entrega.
 
-Files changed:
+Arquivos alterados:
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 
-Validations executed:
-- Loaded planning/orchestration workflows
-- Loaded orchestrator and project-planner agent definitions
-- Loaded relevant skills for orchestration, brainstorming, backend, database, frontend, testing, and deployment
+Validacoes executadas:
+- Carregamento de workflows de planejamento/orquestracao
+- Leitura dos agentes e skills relevantes para frontend, backend, banco, testes e deploy
 
-Last completed step:
-- Drafted `PLAN-0001-rifa-web-platform.md` and left it pending approval.
+Resultado:
+- `PLAN-0001-rifa-web-platform.md` criado e deixado aguardando aprovacao.
 
-Next step:
-- Confirm the architectural assumptions and approve the plan before scaffolding the app.
+Ultimo passo concluido:
+- Plano inicial redigido.
 
-## 2026-04-13 — Plan approval + kernel/project alignment
+Proximo passo:
+- Confirmar as premissas e aprovar o plano antes do scaffold.
 
-Context/objective:
-- Apply the approved product decisions to the active plan and align the sovereign project files with the real stack and MVP rules.
+## 2026-04-13 — Aprovacao do plano e alinhamento do kernel
 
-Files changed:
+Contexto/objetivo:
+- Aplicar as decisoes aprovadas ao plano ativo e alinhar os arquivos soberanos ao stack real do MVP.
+
+Arquivos alterados:
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 - `kernel/project.toml`
 - `kernel/SYSTEM.md`
 - `docs/project/PROJECT_OVERVIEW.md`
 - `docs/project/REQUIREMENTS.md`
 
-Validations executed:
-- Confirmed admin auth decision: email/password with magic-link email confirmation
-- Confirmed participant verification direction: SMS-first for MVP
-- Confirmed MVP payment flow: PIX QR shown to participant with manual admin confirmation
+Validacoes executadas:
+- Confirmacao de auth do admin por email/senha com confirmacao por link magico
+- Confirmacao do fluxo inicial do participante para o MVP
+- Confirmacao do pagamento por PIX com validacao manual pelo admin
 
-Last completed step:
-- Product definition, kernel alignment, and active plan update completed.
+Resultado:
+- Definicao de produto e alinhamento do kernel concluídos.
 
-Next step:
-- Scaffold the Next.js application and start implementation of the approved MVP foundation.
+Ultimo passo concluido:
+- Projeto alinhado ao MVP aprovado.
 
-## 2026-04-13 — MVP image decision
+Proximo passo:
+- Iniciar o scaffold da aplicacao.
 
-Context/objective:
-- Finalize the remaining MVP media decision before scaffolding the application.
+## 2026-04-13 — Decisao de imagem do MVP
 
-Files changed:
+Contexto/objetivo:
+- Fechar a decisao remanescente sobre imagens antes do scaffold.
+
+Arquivos alterados:
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 - `docs/project/REQUIREMENTS.md`
 
-Validations executed:
-- Confirmed raffle item images will use external URLs in the MVP
+Validacoes executadas:
+- Confirmado o uso de URLs externas para imagens no MVP inicial
 
-Last completed step:
-- MVP scope fully locked for scaffold.
+Resultado:
+- Escopo de midia do MVP travado para iniciar o scaffold.
 
-Next step:
-- Scaffold the Next.js application with the approved stack.
+Ultimo passo concluido:
+- Decisao de imagens concluida.
 
-## 2026-04-13 — MVP foundation scaffold + database setup
+Proximo passo:
+- Gerar a base Next.js do projeto.
 
-Context/objective:
-- Move the project from visual scaffold only to a usable technical foundation with Next.js, Drizzle, env validation, initial schema, migration generation, and setup documentation.
+## 2026-04-13 — Fundacao do MVP e setup de banco
 
-Files changed:
+Contexto/objetivo:
+- Sair do scaffold visual e criar uma base tecnica utilizavel com Next.js, Drizzle, validacao de env, schema inicial, migration e documentacao de setup.
+
+Arquivos alterados:
 - `package.json`
 - `.gitignore`
 - `.nvmrc`
@@ -141,31 +146,30 @@ Files changed:
 - `drizzle/meta/0000_snapshot.json`
 - `drizzle/meta/_journal.json`
 
-Validations executed:
+Validacoes executadas:
 - `npm run db:generate`
 - `npm run lint`
 - `npm run typecheck`
 - `npm run build`
 
-Result:
-- Next.js foundation scaffolded and building successfully.
-- Drizzle schema and first SQL migration generated.
-- Health endpoint created for env/database readiness checks.
-- Setup documentation added for Neon + Vercel + local env.
-- Raffle creation validation schema established for the future admin flow.
+Resultado:
+- Fundacao da app criada com sucesso.
+- Schema inicial e primeira migration gerados.
+- Endpoint de health criado.
+- Setup local e remoto documentado.
 
-Last completed step:
-- MVP foundation and database/ORM setup completed.
+Ultimo passo concluido:
+- Base tecnica do MVP pronta.
 
-Next step:
-- Implement admin authentication and the real create-raffle flow using the generated schema and server-side validations.
+Proximo passo:
+- Implementar autenticacao do admin e criacao real de rifa.
 
-## 2026-04-14 — Admin auth + create-raffle flow
+## 2026-04-14 — Auth do admin e criacao de rifa
 
-Context/objective:
-- Continue the MVP so the project can already be published to GitHub and exercised on Vercel with a real admin flow and persisted raffle creation.
+Contexto/objetivo:
+- Evoluir o MVP para um fluxo real de cadastro/login do admin e criacao persistida de rifa.
 
-Files changed:
+Arquivos alterados:
 - `src/lib/env.ts`
 - `src/lib/formatters.ts`
 - `src/lib/utils.ts`
@@ -195,32 +199,31 @@ Files changed:
 - `docs/project/SETUP.md`
 - `memory/logs/DEBUG-HISTORY.md`
 
-Validations executed:
+Validacoes executadas:
 - `npm run db:generate`
 - `npm run lint`
 - `npm run typecheck`
 - `npm run build`
 
-Result:
-- Admin registration and login flow implemented.
-- Email confirmation by magic link implemented with Resend integration and dev preview fallback.
-- Protected admin panel implemented.
-- Create-raffle flow implemented with server-side validation and database persistence.
-- Public raffle page implemented with PIX QR Code rendering and item image URLs.
-- Schema updated with raffle slug and new migration generated.
+Resultado:
+- Cadastro e login do admin implementados.
+- Confirmacao por link magico implementada.
+- Painel administrativo protegido implementado.
+- Criacao de rifa persistida implementada.
+- Pagina publica inicial da rifa funcionando.
 
-Last completed step:
-- Project is ready for GitHub publication and Vercel validation of the admin + raffle publication flow.
+Ultimo passo concluido:
+- Fluxo admin-base do MVP concluido.
 
-Next step:
-- Implement participant OTP flow, quota reservation, public quota grid, and manual payment confirmation screens.
+Proximo passo:
+- Implementar reserva do participante, pagamento manual e sorteio.
 
-## 2026-04-14 — Participant reservation flow + admin operations
+## 2026-04-14 — Reserva do participante e operacao do admin
 
-Context/objective:
-- Complete the next MVP slice so a raffle can receive participant reservations, show sold quotas publicly, allow manual payment confirmation by the admin, and execute an auditable draw.
+Contexto/objetivo:
+- Completar o fluxo fim a fim da rifa com reservas, confirmacao manual de pagamento e sorteio auditavel.
 
-Files changed:
+Arquivos alterados:
 - `src/lib/env.ts`
 - `.env.example`
 - `src/features/participants/schemas.ts`
@@ -238,30 +241,29 @@ Files changed:
 - `src/app/api/admin/raffles/[id]/draw/route.ts`
 - `docs/project/SETUP.md`
 
-Validations executed:
+Validacoes executadas:
 - `npm run lint`
 - `npm run typecheck`
 - `npm run build`
 
-Result:
-- Participant OTP request and verification flow implemented with preview fallback for development.
-- Quota reservation implemented with 5-digit unique ticket generation and participant linkage.
-- Public raffle page now shows the participant reservation flow and sold quota grid.
-- Admin raffle details page now supports manual payment confirmation and auditable draw execution.
-- Build issue on `/admin/rifas/[id]` resolved by moving operational loading to protected API routes plus a client-side details screen.
+Resultado:
+- Fluxo inicial do participante implementado.
+- Geracao de numeros de 5 digitos implementada.
+- Grid publica de cotas implementada naquele momento.
+- Confirmacao manual de pagamento e sorteio auditavel implementados.
 
-Last completed step:
-- MVP now covers admin onboarding, raffle creation, participant reservation, manual payment confirmation, and draw execution.
+Ultimo passo concluido:
+- Fluxo principal do MVP implementado localmente.
 
-Next step:
-- Prepare the repository for GitHub publication and configure production providers on Vercel/Neon.
+Proximo passo:
+- Preparar publicacao e validar em ambiente remoto.
 
-## 2026-04-14 — Decision registry + scope consolidation
+## 2026-04-14 — Registro de decisoes e consolidacao de escopo
 
-Context/objective:
-- Close the documentation gap where approved product and architecture decisions had been implemented but were not yet formally recorded in `memory/decisions/`.
+Contexto/objetivo:
+- Corrigir a lacuna documental entre o que ja havia sido implementado e o que estava formalmente registrado.
 
-Files changed:
+Arquivos alterados:
 - `memory/decisions/DECISION-001.md`
 - `memory/decisions/DECISION-002.md`
 - `memory/decisions/DECISION-003.md`
@@ -270,302 +272,177 @@ Files changed:
 - `docs/project/PROJECT_OVERVIEW.md`
 - `docs/project/REQUIREMENTS.md`
 
-Validations executed:
-- Cross-checked approved decisions against plan, kernel, and product docs
+Validacoes executadas:
+- Cruzamento entre plano, kernel e docs do produto
 
-Result:
-- Core architecture, auth/payment flow, MVP scope, and PIX/draw behavior are now formally registered as decisions.
-- Project scope is now consolidated in a dedicated markdown document instead of being spread only across conversation, plan, and requirements.
+Resultado:
+- Arquitetura, auth, pagamento e regras de sorteio formalizados em memoria de decisoes.
 
-Last completed step:
-- Product/architecture decision memory brought into compliance with the workflow.
+Ultimo passo concluido:
+- Memoria de decisoes em conformidade com o fluxo.
 
-Next step:
-- Keep future scope and architecture changes mirrored in both `memory/decisions/` and `docs/project/SCOPE.md`.
+Proximo passo:
+- Manter toda mudanca de escopo espelhada em `memory/decisions/` e `docs/project/SCOPE.md`.
 
-## 2026-04-14 — PLAN-0001 review
+## 2026-04-14 — Revisao do PLAN-0001
 
-Context/objective:
-- Revise `PLAN-0001` so it reflects the actual implementation state instead of remaining as a pre-implementation proposal.
+Contexto/objetivo:
+- Atualizar `PLAN-0001` para refletir o estado real da implementacao.
 
-Files changed:
+Arquivos alterados:
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 
-Validations executed:
-- Cross-checked the plan against the implemented app structure and current documentation
+Validacoes executadas:
+- Comparacao do plano com o codigo e a documentacao existentes
 
-Result:
-- `PLAN-0001` now records completed phases, remaining hardening work, validation status, risks, and objective completion criteria.
+Resultado:
+- O plano passou a registrar fases concluídas, riscos e criterios reais de conclusao.
 
-Last completed step:
-- Active plan updated to match the real project state.
+Ultimo passo concluido:
+- Plano ativo alinhado ao estado do repositorio.
 
-Next step:
-- Use `PLAN-0001` as the live checklist for GitHub publication, Vercel validation, and MVP hardening.
+Proximo passo:
+- Usar o plano como checklist de deploy e hardening.
 
-## 2026-04-14 — Repository preparation for first publication
+## 2026-04-14 — Preparacao do repositorio para publicacao
 
-Context/objective:
-- Prepare the repository for the first GitHub publication with safer ignore rules and a project-level README.
+Contexto/objetivo:
+- Preparar a primeira publicacao no GitHub com regras de ignore mais seguras e README inicial.
 
-Files changed:
+Arquivos alterados:
 - `.gitignore`
 - `README.md`
 
-Validations executed:
-- Reviewed current git status and publication-sensitive local files
+Validacoes executadas:
+- Revisao do `git status` e dos artefatos locais sensiveis
 
-Result:
-- Local editor and AI-tooling artifacts are now ignored by Git.
-- The repository now has a top-level README with setup, stack, test flow, and documentation references.
+Resultado:
+- Arquivos locais e de ferramentas passaram a ser ignorados corretamente.
+- README de projeto criado.
 
-Last completed step:
-- Repository publication baseline prepared.
+Ultimo passo concluido:
+- Base do repositorio pronta para publicacao.
 
-Next step:
-- Review `git status`, stage the intended files, and create the first commit when approved.
+Proximo passo:
+- Revisar `git status` e seguir para commit/publicacao.
 
-## 2026-04-14 — Next steps alignment after GitHub publication
+## 2026-04-14 — Alinhamento de proximo passo apos publicacao
 
-Context/objective:
-- Update the active plan after the repository was successfully published to GitHub so the remaining next steps reflect the real state.
+Contexto/objetivo:
+- Ajustar o plano apos a publicacao inicial no GitHub.
 
-Files changed:
+Arquivos alterados:
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 
-Validations executed:
-- Compared the active plan against the completed GitHub publication milestone
+Validacoes executadas:
+- Comparacao do plano com o marco de publicacao concluido
 
-Result:
-- The plan now records GitHub publication as completed and keeps Neon + Vercel deployment as the active next steps.
+Resultado:
+- O plano passou a registrar GitHub como concluido e Neon/Vercel como proximo alvo.
 
-Last completed step:
-- Planning state aligned with the repository publication milestone.
+Ultimo passo concluido:
+- Planejamento alinhado ao marco de publicacao.
 
-Next step:
-- Configure Neon, Vercel environment variables, and the first remote deployment.
+Proximo passo:
+- Configurar Neon e Vercel para o primeiro deploy remoto.
 
-## 2026-04-14 — progress.md refactor to operational snapshot
+## 2026-04-14 — Refatoracao do progress.md
 
-Context/objective:
-- Realign `memory/progress.md` with its intended purpose as a pure current-state snapshot, without mixing history, module architecture, or plan evolution.
+Contexto/objetivo:
+- Realinhar `memory/progress.md` ao papel de snapshot operacional, sem misturar historico ou arquitetura.
 
-Files changed:
+Arquivos alterados:
 - `memory/progress.md`
 
-Validations executed:
-- Compared `progress.md` responsibilities against `MODIFICATION_LOG`, `PLAN-0001`, and `kernel/ARCHITECTURE.md`
+Validacoes executadas:
+- Comparacao de responsabilidades entre `progress.md`, `MODIFICATION_LOG`, `PLAN-0001` e `kernel/ARCHITECTURE.md`
 
-Result:
-- `progress.md` now contains only current readiness, in-progress work, active risks, and the immediate next step.
-- Historical tracking remains in `MODIFICATION_LOG`.
-- Structural/module concerns remain outside `progress.md`.
+Resultado:
+- `progress.md` passou a refletir apenas estado atual, riscos e proximo passo.
 
-Last completed step:
-- Operational snapshot semantics restored for `memory/progress.md`.
+Ultimo passo concluido:
+- Snapshot operacional restaurado.
 
-Next step:
-- Keep `progress.md` limited to current-state updates only.
+Proximo passo:
+- Manter `progress.md` restrito a estado atual.
 
-## 2026-04-14 — Deploy setup refinement for Neon + Vercel order
+## 2026-04-14 — Refinos do guia de deploy e setup
 
-Context/objective:
-- Refine the deployment setup guide so the remote rollout follows the correct order: Neon first, then envs, then Vercel.
+Contexto/objetivo:
+- Melhorar o passo a passo de deploy com Neon e Vercel e reduzir atritos de setup local.
 
-Files changed:
-- `docs/project/SETUP.md`
-
-Validations executed:
-- Compared the existing setup guide against the active plan next steps and the intended remote deployment sequence
-
-Result:
-- `SETUP.md` now works as an operational checklist for creating the Neon database, applying migrations, configuring env vars, and only then deploying on Vercel.
-- Common deployment mistakes are now called out explicitly.
-
-Last completed step:
-- Deployment documentation aligned to the correct rollout order.
-
-Next step:
-- Create the Neon project, capture `DATABASE_URL`, and proceed with the first remote deployment checklist.
-
-## 2026-04-14 — Setup clarification for env workflow
-
-Context/objective:
-- Improve the setup guidance so env handling is more explicit and create the local `.env.local` scaffold to reduce friction during Neon/Vercel setup.
-
-Files changed:
+Arquivos alterados:
 - `docs/project/SETUP.md`
 - `.env.local`
-
-Validations executed:
-- Verified `.env.local` did not exist yet
-- Reviewed `.env.example` and the current deployment checklist
-
-Result:
-- The setup guide now tells the user to place the Neon connection string directly into `.env.local`.
-- Environment variables now show clearer usage choices for preview vs. real providers.
-- A local `.env.local` scaffold was created with safe placeholders.
-
-Last completed step:
-- Local environment setup path simplified for the upcoming Neon/Vercel rollout.
-
-Next step:
-- Fill `DATABASE_URL` from Neon into `.env.local` and continue with the deployment checklist.
-
-## 2026-04-14 — Neon wizard guidance added to setup
-
-Context/objective:
-- Add explicit guidance for the Neon project creation wizard so the database can be created without ambiguity during deployment setup.
-
-Files changed:
-- `docs/project/SETUP.md`
-
-Validations executed:
-- Confirmed the project does not require Neon Auth and that the deployment goal is a standard MVP database setup
-
-Result:
-- `SETUP.md` now explains how to choose region, auth, launch, and scale during Neon project creation.
-
-Last completed step:
-- Neon creation guidance documented in the setup flow.
-
-Next step:
-- Create the Neon database using the documented defaults and place the resulting `DATABASE_URL` into `.env.local`.
-
-## 2026-04-14 — Neon connection string guidance clarified
-
-Context/objective:
-- Clarify which connection string from the Neon dashboard should be used in the local environment and which extra variables can be ignored during the current setup.
-
-Files changed:
-- `docs/project/SETUP.md`
-
-Validations executed:
-- Matched the Neon dashboard output against the app's current env requirements
-
-Result:
-- `SETUP.md` now explicitly tells the user to use the `DATABASE_URL` marked as recommended and ignore the extra `PG*` and `POSTGRES_*` values for this setup flow.
-
-Last completed step:
-- Neon connection string selection documented for the deployment checklist.
-
-Next step:
-- Run the local database migration and connectivity checks using the configured `DATABASE_URL`.
-
-## 2026-04-14 — Drizzle config loads .env.local automatically
-
-Context/objective:
-- Remove the need for manual shell sourcing of `.env.local` before running Drizzle commands.
-
-Files changed:
-- `drizzle.config.ts`
-- `docs/project/SETUP.md`
-
-Validations executed:
-- Confirmed `drizzle.config.ts` only read `process.env.DATABASE_URL` and did not load `.env.local`
-
-Result:
-- Drizzle now loads `.env.local` automatically through `@next/env`, aligning migration commands with the rest of the Next.js project setup.
-
-Last completed step:
-- Local migration workflow made more reliable.
-
-Next step:
-- Re-run `npm run db:migrate` with the configured Neon `DATABASE_URL`.
-
-## 2026-04-14 — check-db script loads .env.local automatically
-
-Context/objective:
-- Align the database connectivity check script with the same env-loading behavior used by Drizzle and Next.js.
-
-Files changed:
-- `scripts/check-db.mjs`
-
-Validations executed:
-- Confirmed the script read `process.env.DATABASE_URL` directly and therefore failed when `.env.local` was not manually sourced in the shell
-
-Result:
-- `npm run db:check` now loads `.env.local` automatically before testing the Neon connection.
-
-Last completed step:
-- Local DB validation flow aligned across migration and connectivity scripts.
-
-Next step:
-- Re-run `npm run db:check` and continue with local app startup.
-
-## 2026-04-14 — ESM import fix for @next/env
-
-Context/objective:
-- Fix the local env-loading integration after Node reported that `@next/env` could not be imported as a named export in ESM mode.
-
-Files changed:
 - `drizzle.config.ts`
 - `scripts/check-db.mjs`
 
-Validations executed:
-- Used the runtime error message to identify the CommonJS-to-ESM interop issue
+Validacoes executadas:
+- Revisao do fluxo de envs
+- Revisao do fluxo de Neon
+- Revisao da carga automatica de `.env.local`
+- Verificacao de erro de interop ESM com `@next/env`
 
-Result:
-- Both files now import `@next/env` through the default export and destructure `loadEnvConfig`, matching the runtime's expected interop behavior.
+Resultado:
+- O setup passou a documentar melhor ordem de rollout, criacao do banco e variaveis.
+- Drizzle e `db:check` passaram a carregar `.env.local` automaticamente.
+- O erro de importacao ESM com `@next/env` foi corrigido.
 
-Last completed step:
-- Env-loading compatibility corrected for local Drizzle and DB check scripts.
+Ultimo passo concluido:
+- Setup local/remoto tornado mais confiavel.
 
-Next step:
-- Re-run `npm run db:check` and then continue with `npm run dev`.
+Proximo passo:
+- Revalidar migracoes e conectividade no banco alvo.
 
-## 2026-04-14 — Debug history update for raffle creation and image grid issues
+## 2026-04-14 — Atualizacao do DEBUG-HISTORY
 
-Context/objective:
-- Persist the debugging knowledge from the issues found while testing raffle creation and the public image grid.
+Contexto/objetivo:
+- Registrar na memoria tecnica os bugs encontrados durante os testes do fluxo de criacao de rifa e da grade de imagens.
 
-Files changed:
+Arquivos alterados:
 - `memory/logs/DEBUG-HISTORY.md`
 
-Validations executed:
-- Consolidated the observed symptoms, confirmed root causes, and documented the applied fixes
+Validacoes executadas:
+- Consolidacao de sintomas, causas-raiz e acoes corretivas
 
-Result:
-- The project now retains explicit debug memory for the raffle-creation flow issue and the broken 2-column image grid issue.
+Resultado:
+- O projeto passou a reter memoria explicita para esses bugs operacionais.
 
-Last completed step:
-- Bug knowledge captured for future sessions.
+Ultimo passo concluido:
+- Conhecimento de debug persistido.
 
-Next step:
-- Keep adding resolved issues to `DEBUG-HISTORY.md` whenever a bug is identified and fixed.
+Proximo passo:
+- Continuar registrando bugs resolvidos no `DEBUG-HISTORY.md`.
 
-## 2026-04-15 — Debug history update for Next.js 15 use server export restriction
+## 2026-04-15 — Atualizacao do DEBUG-HISTORY para restricao do `use server`
 
-Context/objective:
-- Persist the technical memory for the public OTP flow failure caused by an invalid non-async export inside a `use server` file.
+Contexto/objetivo:
+- Registrar o erro do Next.js 15 quando um arquivo `use server` exportava algo nao-async.
 
-Files changed:
+Arquivos alterados:
 - `memory/logs/DEBUG-HISTORY.md`
 
-Validations executed:
-- Confirmed the runtime error message
-- Confirmed the fix by moving the initial participant state out of the server-action file
-- Re-ran `npm run typecheck` and `npm run lint`
+Validacoes executadas:
+- Confirmacao da mensagem de erro
+- Confirmacao da correcao ao mover o estado inicial para fora do arquivo de server action
+- `npm run typecheck`
+- `npm run lint`
 
-Result:
-- The project now retains explicit debug memory for the Next.js 15 `use server` export restriction encountered in the participant flow.
+Resultado:
+- A restricao do Next.js 15 ficou registrada na memoria tecnica do projeto.
 
-Last completed step:
-- Bug knowledge for the OTP action runtime failure captured.
+Ultimo passo concluido:
+- Conhecimento de bug framework/runtime persistido.
 
-Next step:
-- Continue recording resolved runtime/framework issues in `DEBUG-HISTORY.md` as they appear.
+Proximo passo:
+- Continuar registrando falhas resolvidas do runtime.
 
-## 2026-04-15 — Scope pivot registered: email receipt instead of OTP
+## 2026-04-15 — Registro da mudanca de escopo: recibo por email em vez de OTP
 
-Context/objective:
-- Register the significant MVP scope change requested on 2026-04-15 before implementation.
-- The participant flow will no longer use OTP, SMS, or WhatsApp.
-- Participants will provide name, email, phone, and quota quantity; generated numbers will be shown immediately.
-- The admin will confirm PIX manually from an operational grid, then send a receipt/confirmation email through Brevo.
-- The raffle item image scope now includes one labeled real-object image with upload support, with production storage still requiring an explicit durable-storage decision.
+Contexto/objetivo:
+- Registrar a grande mudanca de escopo do MVP antes da implementacao.
 
-Files changed:
+Arquivos alterados:
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 - `memory/decisions/DECISION-005.md`
 - `memory/progress.md`
@@ -575,30 +452,26 @@ Files changed:
 - `kernel/project.toml`
 - `kernel/SYSTEM.md`
 
-Validations executed:
-- Read active plan, requirements, scope, project overview, project dictionary, and technical system rules
-- Classified the request as a structural scope change requiring plan update before code implementation
+Validacoes executadas:
+- Leitura do plano ativo, docs e regras tecnicas
+- Classificacao da mudanca como estrutural
 
-Result:
-- The new scope is recorded in plan, decision memory, product docs, and technical rules.
-- Implementation remains pending explicit approval of the updated Phase 7.
+Resultado:
+- O fluxo do participante passou a ser redefinido sem OTP/SMS/WhatsApp.
+- A confirmacao formal passou a ser por email via Brevo apos validacao manual do PIX.
 
-Last completed step:
-- Scope pivot and plan modification registered.
+Ultimo passo concluido:
+- Mudanca de escopo registrada antes do codigo.
 
-Next step:
-- Approve Phase 7 implementation and answer the remaining storage/admin-confirmation details before code changes.
+Proximo passo:
+- Aprovar e implementar a nova fase do plano.
 
-## 2026-04-15 — Phase 7 implementation: no OTP + Brevo receipts + Vercel Blob
+## 2026-04-15 — Implementacao da Phase 7: sem OTP + Brevo + Vercel Blob
 
-Context/objective:
-- Implement the approved Phase 7 scope pivot.
-- Replace the public participant OTP flow with a single reservation form using name, email, phone, and quota quantity.
-- Add batch payment confirmation in the admin grid.
-- Send payment receipt emails through Brevo SMTP after manual PIX confirmation.
-- Add persistent image upload for the real item image using Vercel Blob.
+Contexto/objetivo:
+- Implementar o pivot aprovado de escopo.
 
-Files changed:
+Arquivos alterados:
 - `package.json`
 - `package-lock.json`
 - `.env.example`
@@ -629,7 +502,7 @@ Files changed:
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 - `memory/progress.md`
 
-Validations executed:
+Validacoes executadas:
 - `npm install nodemailer @vercel/blob`
 - `npm install -D @types/nodemailer`
 - `npm install drizzle-orm@0.45.2 drizzle-kit@0.31.10`
@@ -639,83 +512,74 @@ Validations executed:
 - `npm run build`
 - `npm audit --audit-level=high`
 
-Result:
-- Public reservation flow no longer uses OTP/SMS/WhatsApp.
-- Participant email is now required and stored for receipts.
-- Ticket numbers are generated and shown immediately after reservation.
-- Admin payment confirmation supports batch selection.
-- Receipt email dispatch is integrated through Brevo SMTP.
-- Real item image upload uses Vercel Blob and labels the first image as the real object image.
-- Drizzle high-severity audit finding was fixed by upgrading `drizzle-orm`; moderate dev dependency findings remain through `drizzle-kit`.
+Resultado:
+- Fluxo publico passou a operar sem OTP/SMS/WhatsApp.
+- Email do participante tornou-se obrigatorio.
+- Confirmacao em lote no admin foi implementada.
+- Recibo por email via Brevo foi integrado.
+- Upload persistente da imagem real do item passou a usar Vercel Blob.
 
-Last completed step:
-- Local implementation, migration generation, lint, typecheck, build, and high-severity audit validation completed.
+Ultimo passo concluido:
+- Implementacao local da Phase 7 concluida e validada.
 
-Next step:
-- Apply the generated migration to the target Neon database and run a functional test with real Brevo SMTP and Vercel Blob environment variables configured.
+Proximo passo:
+- Aplicar migration no Neon e validar com variaveis reais.
 
-## 2026-04-15 — Neon migration 0002 verified
+## 2026-04-15 — Migration 0002 validada no Neon
 
-Context/objective:
-- Verify the user's `npm run db:migrate` execution against the target Neon database.
-- Fix the local `db:check` helper after runtime import behavior for `@next/env` failed in the `.mjs` script.
+Contexto/objetivo:
+- Verificar a execucao de `npm run db:migrate` no banco Neon alvo e corrigir o helper `db:check`.
 
-Files changed:
+Arquivos alterados:
 - `scripts/check-db.mjs`
 - `memory/progress.md`
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 - `memory/MODIFICATION_LOG.md`
 
-Validations executed:
+Validacoes executadas:
 - `npm run db:check`
-- Direct schema query against Neon for `drizzle.__drizzle_migrations`, `participants`, `quota_reservations`, `raffle_item_images`, and `public.otp_challenges`
+- Query direta nas tabelas e metadados relevantes do banco
 
-Result:
-- Neon connection is OK.
-- Migration id `3` / `0002_milky_patch` is registered in `drizzle.__drizzle_migrations`.
-- `participants.email` exists and is `NOT NULL`.
-- `quota_reservations.receipt_email_sent_at` exists.
-- `raffle_item_images.is_real_item_image` exists and is `NOT NULL`.
-- `public.otp_challenges` no longer exists.
-- `scripts/check-db.mjs` now loads `@next/env` correctly at runtime.
+Resultado:
+- Conexao Neon validada.
+- Migration `0002_milky_patch` confirmada no banco.
+- Campos novos do pivot confirmados.
+- `public.otp_challenges` nao existe mais.
 
-Last completed step:
-- Target database migration verified.
+Ultimo passo concluido:
+- Banco alvo validado com a migration nova.
 
-Next step:
-- Configure Brevo SMTP and Vercel Blob in the Vercel environment, then run the full functional test.
+Proximo passo:
+- Configurar Brevo e Blob no ambiente Vercel e rodar validacao funcional completa.
 
-## 2026-04-15 — Brevo email confirmation validated
+## 2026-04-15 — Confirmacao de email via Brevo validada
 
-Context/objective:
-- Record the successful real-world validation of the Brevo email confirmation flow after the Phase 7 scope pivot.
+Contexto/objetivo:
+- Registrar a validacao real do envio por Brevo.
 
-Files changed:
+Arquivos alterados:
 - `memory/progress.md`
 - `memory/plans/PLAN-0001-rifa-web-platform.md`
 - `memory/MODIFICATION_LOG.md`
 
-Validations executed:
-- User confirmed that email confirmation via Brevo worked successfully.
+Validacoes executadas:
+- Confirmacao do usuario de que o fluxo de email via Brevo funcionou corretamente
 
-Result:
-- Brevo SMTP email confirmation is validated.
-- Remaining Phase 7 external validation is focused on Vercel Blob upload and Vercel deployment flow.
+Resultado:
+- Brevo validado com sucesso em uso real.
 
-Last completed step:
-- Brevo email confirmation verified by user.
+Ultimo passo concluido:
+- Validacao de email concluida.
 
-Next step:
-- Configure/test Vercel Blob for real item image upload and continue Vercel deployment validation.
+Proximo passo:
+- Validar Blob e o fluxo remoto completo.
 
-## 2026-04-15 — Landing page and real image upload persistence
+## 2026-04-15 — Landing page e persistencia da imagem real
 
-Context/objective:
-- Fix the admin upload behavior so the uploaded real item image replaces the first image immediately and persists in the database.
-- Improve the home page so it reads like a public raffle landing page instead of a technical MVP page.
-- Use the latest published raffle as the landing highlight card, including its image and quota value.
+Contexto/objetivo:
+- Corrigir a persistencia da imagem real do item e melhorar a landing page publica.
 
-Files changed:
+Arquivos alterados:
 - `src/app/api/admin/raffles/[id]/item/upload/route.ts`
 - `src/features/raffles/components/admin-raffle-details-client.tsx`
 - `src/features/raffles/repository.ts`
@@ -723,30 +587,29 @@ Files changed:
 - `memory/progress.md`
 - `memory/MODIFICATION_LOG.md`
 
-Validations executed:
-- Reviewed `https://www.rifeme.com.br/` for high-level content direction without copying text
+Validacoes executadas:
+- Revisao referencial de conteudo publico
 - `npm run lint`
 - `npm run typecheck`
 - `npm run build`
 
-Result:
-- Uploading the real item image now updates the first `raffle_item_images` row or inserts it when none exists.
-- The admin panel reloads details after upload, so the uploaded image appears immediately.
-- The landing page now fetches the latest published raffle and displays it with value, beneficiary, image, and participation CTA.
+Resultado:
+- Upload da imagem real passou a substituir/inserir corretamente a primeira imagem persistida.
+- O painel admin passou a refletir a imagem imediatamente apos upload.
+- A home virou uma landing page comercial com destaque para a rifa mais recente.
 
-Last completed step:
-- Local build validation completed for landing and upload persistence changes.
+Ultimo passo concluido:
+- Landing e upload validados localmente.
 
-Next step:
-- Push changes and redeploy Vercel to validate the landing and upload behavior in production.
+Proximo passo:
+- Publicar e validar em producao.
 
-## 2026-04-15 — Admin raffle details editing
+## 2026-04-15 — Edicao da rifa pelo admin
 
-Context/objective:
-- Add a way for the raffle admin to edit the raffle itself after creation, including the quota price.
-- Preserve financial integrity by making price changes apply only to future reservations.
+Contexto/objetivo:
+- Permitir que o admin edite dados da rifa apos a criacao, inclusive valor da cota.
 
-Files changed:
+Arquivos alterados:
 - `src/features/raffles/schemas.ts`
 - `src/app/api/admin/raffles/[id]/details/route.ts`
 - `src/features/raffles/components/admin-raffle-details-client.tsx`
@@ -755,19 +618,207 @@ Files changed:
 - `memory/progress.md`
 - `memory/MODIFICATION_LOG.md`
 
-Validations executed:
+Validacoes executadas:
 - `npm run lint`
 - `npm run typecheck`
 - `npm run build`
 
-Result:
-- Admin raffle details page now includes a "Dados da rifa" form.
-- Admin can edit raffle name, purpose, beneficiary, and quota value.
-- The new quota value is stored on `raffles.quotaPriceInCents` and applies to future reservations.
-- Existing reservations keep their persisted `unitPriceInCents` and `totalAmountInCents`.
+Resultado:
+- O painel admin passou a permitir editar nome, proposito, beneficiario e valor da cota.
+- Reservas antigas preservam os valores persistidos anteriormente.
 
-Last completed step:
-- Local build validation completed for raffle details editing.
+Ultimo passo concluido:
+- Edicao da rifa validada localmente.
 
-Next step:
-- Push changes and redeploy Vercel to validate editing the quota value in production.
+Proximo passo:
+- Publicar e validar em producao.
+
+## 2026-04-16 — Bootstrap da sessao e auditoria do estado atual
+
+Contexto/objetivo:
+- Executar `kernel/BOOTSTRAP.md` na sessao atual e reconciliar memoria, plano, decisoes, git e validacoes locais.
+
+Arquivos verificados:
+- `kernel/BOOTSTRAP.md`
+- `kernel/project.toml`
+- `kernel/SOUL.md`
+- `kernel/RULES.md`
+- `kernel/SYSTEM.md`
+- `kernel/index.toml`
+- `kernel/ARCHITECTURE.md`
+- `kernel/workflows/status.md`
+- `memory/WORKFLOW_MEMORY_PLAYBOOK.md`
+- `memory/MODIFICATION_LOG.md`
+- `memory/progress.md`
+- `memory/plans/PLAN-0001-rifa-web-platform.md`
+- `memory/decisions/DECISION-001.md`
+- `memory/decisions/DECISION-002.md`
+- `memory/decisions/DECISION-003.md`
+- `memory/decisions/DECISION-004.md`
+- `memory/decisions/DECISION-005.md`
+- `memory/logs/DEBUG-HISTORY.md`
+- `package.json`
+
+Validacoes executadas:
+- `git status --short`
+- `git branch --show-current`
+- `git log --oneline -5`
+- `python3 kernel/scripts/session_manager.py status .`
+- `python3 kernel/scripts/auto_preview.py status`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+- `rg -n "OTP|otp|SMS|WhatsApp|whatsapp" src docs memory -g '!node_modules'`
+
+Resultado:
+- Bootstrap concluido com sucesso.
+- O repositorio estava limpo na `main` antes do registro da sessao.
+- Lint, typecheck e build passaram.
+- O principal conflito encontrado foi `DECISION-002` ainda ativa apesar de `DECISION-005` substitui-la no fluxo do participante.
+
+Ultimo passo concluido:
+- Auditoria de estado atual concluida.
+
+Proximo passo:
+- Reconciliar o registro de decisoes e manter a execucao alinhada ao plano ativo.
+
+## 2026-04-16 — Correcao retroativa de governanca para mudancas ja publicadas
+
+Contexto/objetivo:
+- Corrigir a falha de processo em que mudancas publicadas nao haviam sido refletidas em plano/log/memoria.
+
+Arquivos alterados:
+- `memory/decisions/DECISION-002.md`
+- `memory/decisions/DECISION-003.md`
+- `memory/decisions/DECISION-005.md`
+- `docs/project/SCOPE.md`
+- `docs/project/REQUIREMENTS.md`
+- `docs/project/SETUP.md`
+- `memory/progress.md`
+- `memory/plans/PLAN-0001-DONE-rifa-web-platform.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validacoes executadas:
+- Confirmacao do usuario de que Vercel + Neon estao funcionando corretamente
+- Confirmacao do usuario de que o email via Brevo esta sendo enviado sem problemas
+- Confirmacao do usuario de que nao houve intercorrencias no fluxo validado
+- Revisao dos commits `909fe46` e `f0848cf`
+
+Resultado:
+- As mudancas faltantes foram formalmente registradas.
+- Ficou documentado que a pagina publica atual:
+  - gera 1 cota por confirmacao;
+  - nao exibe mais grid publica de cotistas.
+- `DECISION-002` foi desativada e o fluxo do participante ficou governado por `DECISION-005`.
+
+Ultimo passo concluido:
+- Trilha de memoria reparada.
+
+Proximo passo:
+- Encerrar formalmente o `PLAN-0001` e abrir o proximo plano.
+
+## 2026-04-16 — END PLAN-0001-rifa-web-platform
+
+Contexto/objetivo:
+- Encerrar formalmente o primeiro plano de entrega apos validacao remota em Vercel + Neon, envio real por Brevo e ausencia de incidentes relatados.
+
+Arquivos alterados:
+- `memory/plans/PLAN-0001-DONE-rifa-web-platform.md`
+- `memory/progress.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validacoes executadas:
+- Confirmacao do usuario de saude do ambiente remoto
+- Confirmacao do usuario de envio transacional por email
+- Revisao dos criterios de conclusao do plano
+
+Resultado:
+- `PLAN-0001` encerrado com `DONE`.
+- Itens de hardening mais profundos permaneceram como backlog, nao como bloqueio de encerramento.
+
+Ultimo passo concluido:
+- `PLAN-0001` encerrado formalmente.
+
+Proximo passo:
+- Abrir novo plano para o proximo slice solicitado.
+
+## 2026-04-16 — START PLAN-0002-payment-follow-up-and-public-copy
+
+Contexto/objetivo:
+- Abrir novo plano estrutural para:
+  - adicionar a acao `Checar pagamento` ao lado da confirmacao de pagamento;
+  - enviar email de follow-up para reservas pendentes;
+  - adicionar mensagem orientativa abaixo da acao de copiar PIX na tela publica.
+
+Arquivos alterados:
+- `memory/plans/PLAN-0002-DONE-payment-follow-up-and-public-copy.md`
+- `memory/progress.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validacoes executadas:
+- Revisao da UI atual do admin em `src/features/raffles/components/admin-raffle-details-client.tsx`
+- Revisao da rota atual de pagamentos em `src/app/api/admin/raffles/[id]/payments/route.ts`
+- Revisao da copy atual da tela publica em `src/features/participants/components/participant-flow.tsx` e `src/app/r/[slug]/page.tsx`
+
+Resultado:
+- `PLAN-0002-DONE-payment-follow-up-and-public-copy.md` concluido apos implementacao e validacao.
+
+Ultimo passo concluido:
+- Novo plano preparado.
+
+Proximo passo:
+- Aguardar aprovacao explicita antes de implementar.
+
+## 2026-04-16 — Implementacao e encerramento do PLAN-0002
+
+Contexto/objetivo:
+- Implementar o `PLAN-0002` aprovado com a nova acao `Checar pagamento` no admin, o email de follow-up para reservas pendentes e a mensagem orientativa abaixo do copiar PIX na tela publica.
+
+Arquivos alterados:
+- `src/features/notifications/payment-follow-up-email.ts`
+- `src/app/api/admin/raffles/[id]/payments/check/route.ts`
+- `src/features/raffles/components/admin-raffle-details-client.tsx`
+- `src/features/raffles/components/pix-payment-card.tsx`
+- `memory/plans/PLAN-0002-DONE-payment-follow-up-and-public-copy.md`
+- `memory/progress.md`
+- `memory/MODIFICATION_LOG.md`
+
+Validacoes executadas:
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+
+Resultado:
+- Cada reserva pendente agora exibe o botao `Checar pagamento` ao lado de `Confirmar e enviar email`.
+- O admin consegue disparar um email de follow-up sem alterar o status financeiro da reserva.
+- O novo email menciona o numero reservado e pergunta se houve algum problema com o PIX ou se a pessoa deseja desistir.
+- A tela publica passou a exibir abaixo do copiar PIX o aviso de que o email de confirmacao nao e automatico.
+- O build passou com a nova rota `/api/admin/raffles/[id]/payments/check`.
+
+Ultimo passo concluido:
+- `PLAN-0002` implementado e encerrado.
+
+Proximo passo:
+- Definir a proxima prioridade de evolucao do produto.
+
+## 2026-04-16 — Normalizacao do MODIFICATION_LOG para pt-BR
+
+Contexto/objetivo:
+- Corrigir a inconsistencia de idioma no `memory/MODIFICATION_LOG.md`, que estava majoritariamente em ingles apesar da linguagem padrao do projeto e do usuario ser pt-BR.
+
+Arquivos alterados:
+- `memory/MODIFICATION_LOG.md`
+
+Validacoes executadas:
+- Revisao integral do arquivo para reescrita em pt-BR
+- Verificacao de preservacao da linha cronologica principal do projeto
+
+Resultado:
+- O `MODIFICATION_LOG.md` foi normalizado para pt-BR.
+- Datas, marcos e contexto operacional relevante foram preservados em linguagem consistente com o projeto.
+
+Ultimo passo concluido:
+- Idioma padrao do log corrigido.
+
+Proximo passo:
+- Manter todos os proximos registros de memoria em pt-BR.

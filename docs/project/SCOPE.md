@@ -1,6 +1,6 @@
 # Escopo do Projeto Rifa
 
-Last updated: 2026-04-15
+Last updated: 2026-04-16
 
 ## Objetivo
 
@@ -25,7 +25,8 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
   - nome
   - email para recebimento do recibo e dos numeros da rifa
   - telefone celular com DDD
-  - escolha da quantidade de cotas
+  - geracao de uma cota por confirmacao
+  - possibilidade de repetir a acao para gerar novas cotas
   - geracao de numeros aleatorios de 5 digitos
   - exibicao imediata dos numeros gerados
   - aviso de que a confirmacao por email sera enviada apos validacao manual do PIX
@@ -38,7 +39,7 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
   - cotas geradas
   - valor unitario e total
   - status de pagamento
-- Grid publica com uma entrada por cota vendida, incluindo repeticao do mesmo participante quando ele tiver varias cotas
+- Tela publica simplificada, sem grade publica de cotistas no fluxo atual
 - Painel administrativo da rifa com:
   - edicao de nome, proposito, beneficiario e valor da cota
   - visualizacao das reservas/participantes em grid operacional

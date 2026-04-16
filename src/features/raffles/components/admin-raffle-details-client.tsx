@@ -60,6 +60,7 @@ type Props = {
 export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element {
   const [data, setData] = useState<AdminRaffleDetailsPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [pixForm, setPixForm] = useState({
     pixLabel: "",
@@ -158,6 +159,7 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     }
 
     setError(null);
+    setNotice(null);
     const response = await fetch(`/api/admin/raffles/${raffleId}/payments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -170,8 +172,36 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
       return;
     }
 
+    const payload = (await response.json()) as { confirmedCount?: number; deliveredCount?: number };
     setSelectedReservationIds([]);
+    setNotice(
+      `Pagamento confirmado para ${payload.confirmedCount ?? reservationIds.length} reserva(s) e email enviado/preparado para ${payload.deliveredCount ?? 0}.`,
+    );
     await fetchDetails();
+  }
+
+  async function checkPayment(reservationIds: string[]): Promise<void> {
+    if (!reservationIds.length) {
+      setError("Selecione ao menos uma reserva para checar.");
+      return;
+    }
+
+    setError(null);
+    setNotice(null);
+    const response = await fetch(`/api/admin/raffles/${raffleId}/payments/check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reservationIds }),
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json()) as { message?: string };
+      setError(payload.message ?? "Nao foi possivel enviar o email de checagem.");
+      return;
+    }
+
+    const payload = (await response.json()) as { sentCount?: number };
+    setNotice(`Email de checagem enviado/preparado para ${payload.sentCount ?? reservationIds.length} reserva(s).`);
   }
 
   async function uploadRealItemImage(file: File): Promise<void> {
@@ -288,6 +318,9 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     <>
       {error ? (
         <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
+      ) : null}
+      {notice ? (
+        <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{notice}</div>
       ) : null}
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
@@ -624,15 +657,26 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                     </div>
                   </div>
                   {reservation.reservationStatus !== "paid" ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void confirmPayments([reservation.reservationId]);
-                      }}
-                      className="mt-3 rounded-2xl bg-brand-700 px-3 py-2 text-xs font-semibold text-white"
-                    >
-                      Confirmar e enviar email
-                    </button>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void confirmPayments([reservation.reservationId]);
+                        }}
+                        className="rounded-2xl bg-brand-700 px-3 py-2 text-xs font-semibold text-white"
+                      >
+                        Confirmar e enviar email
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void checkPayment([reservation.reservationId]);
+                        }}
+                        className="rounded-2xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                      >
+                        Checar pagamento
+                      </button>
+                    </div>
                   ) : null}
                 </article>
                   </div>

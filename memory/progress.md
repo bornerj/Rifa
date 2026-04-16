@@ -11,7 +11,7 @@
 ## Ready Now
 
 - Stack do projeto definida e registrada
-- Aplicacao Next.js inicializada e buildando localmente
+- Aplicacao Next.js publicada e validada em Vercel + Neon
 - Banco e ORM configurados com Drizzle + Neon
 - Migrations versionadas no repositorio
 - Cadastro e login do admin implementados
@@ -20,24 +20,25 @@
 - Edicao posterior de PIX implementada no painel da rifa
 - Edicao posterior do item e das imagens implementada no painel da rifa
 - Pagina publica da rifa implementada
-- Fluxo do participante sem OTP implementado localmente, com coleta de nome, email, telefone e geracao imediata dos numeros
+- Fluxo do participante sem OTP implementado e validado, com coleta de nome, email, telefone e geracao imediata do numero
 - Reserva de cotas com geracao aleatoria de numeros de 5 digitos implementada
 - Exibicao de QR Code PIX implementada
-- Grid publica de cotas implementada
+- Tela publica simplificada sem grid publica de cotistas
 - Confirmacao manual de pagamento pelo admin implementada
 - Sorteio auditavel implementado
 - Repositorio publicado no GitHub
 - Migration `0002_milky_patch` aplicada no banco Neon alvo
 - Confirmacao por email via Brevo validada com sucesso
+- Fluxo remoto validado pelo usuario sem registro de intercorrencias
 - Upload da imagem real agora substitui e persiste automaticamente a imagem principal do item
 - Pagina inicial convertida em landing page comercial com destaque para a rifa publicada mais recente
 - Painel admin permite editar nome, proposito, beneficiario e valor da cota da rifa
+- Painel admin permite enviar email de follow-up por reserva pendente com a acao `Checar pagamento`
+- Tela publica informa abaixo do copiar PIX que o email de confirmacao nao e automatico
 
 ## In Progress Now
 
-- Preparacao do deploy remoto em Vercel
-- Mudanca de escopo para email via Brevo apos confirmacao manual do PIX validada localmente
-- Hardening do MVP retomado apos migracao e teste funcional em ambiente remoto
+- Nenhuma frente estrutural ativa neste momento
 
 ## Blocked Now
 
@@ -45,11 +46,9 @@
 
 ## Active Risks
 
-- Vercel Blob precisa estar configurado no ambiente para upload da imagem real do objeto
 - Confirmacao do PIX ainda e manual no MVP
-- Upload local de imagem nao e persistente de forma confiavel em Vercel/serverless sem storage dedicado
 - Ainda nao ha suite automatizada de testes cobrindo o fluxo principal
 
 ## Immediate Next Step
 
-- Publicar ajustes finais no GitHub/Vercel e validar landing, upload e edicao de valor da cota em producao
+- Definir a proxima prioridade de produto apos a conclusao do `PLAN-0002`

@@ -264,7 +264,7 @@ Importante:
 4. Acesse `/admin`
 5. Crie uma nova rifa em `/admin/rifas/nova`
 6. Abra a pagina publica da rifa em `/r/[slug]`
-7. Informe nome, email, telefone e quantidade de cotas na pagina publica
+7. Informe nome, email e telefone na pagina publica e confirme a geracao da cota
 8. Volte ao painel da rifa em `/admin/rifas/[id]`
 9. Confirme manualmente o pagamento da reserva e verifique o envio do recibo por email
 10. Execute o sorteio quando houver cotas pagas
