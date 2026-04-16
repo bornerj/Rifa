@@ -117,7 +117,39 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     });
   }, [fetchDetails]);
 
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const unpaidReservationIds = new Set(
+      data.operations.reservations
+        .filter((reservation) => reservation.reservationStatus !== "paid")
+        .map((reservation) => reservation.reservationId),
+    );
+
+    setSelectedReservationIds((current) =>
+      current.filter((reservationId) => unpaidReservationIds.has(reservationId)),
+    );
+  }, [data]);
+
   const winningTicketId = useMemo(() => data?.operations.latestDraw?.winningTicketId ?? null, [data]);
+  const sortedReservations = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+
+    return [...data.operations.reservations].sort((left, right) => {
+      const leftRank = left.reservationStatus === "paid" ? 1 : 0;
+      const rightRank = right.reservationStatus === "paid" ? 1 : 0;
+
+      if (leftRank !== rightRank) {
+        return leftRank - rightRank;
+      }
+
+      return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
+    });
+  }, [data]);
 
   async function confirmPayments(reservationIds: string[]): Promise<void> {
     if (!reservationIds.length) {
@@ -514,38 +546,70 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
               Confirmar selecionadas
             </button>
           </div>
-          <div className="mt-5 grid gap-3">
-            {operations.reservations.length ? (
-              operations.reservations.map((reservation) => (
+          <div className="mt-5 grid gap-2.5">
+            {sortedReservations.length ? (
+              sortedReservations.map((reservation, index) => {
+                const previousReservation = sortedReservations[index - 1];
+                const showStatusDivider =
+                  index === 0 ||
+                  previousReservation?.reservationStatus !== reservation.reservationStatus;
+
+                return (
+                  <div key={reservation.reservationId} className="space-y-2.5">
+                    {showStatusDivider ? (
+                      <div className="px-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+                          {reservation.reservationStatus === "paid"
+                            ? "Pagamentos confirmados"
+                            : "Aguardando confirmacao"}
+                        </p>
+                      </div>
+                    ) : null}
                 <article
                   key={reservation.reservationId}
-                  className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4"
+                  className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-3"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="flex items-start gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5">
                       <input
                         type="checkbox"
                         checked={selectedReservationIds.includes(reservation.reservationId)}
                         disabled={reservation.reservationStatus === "paid"}
                         onChange={(event) => {
-                          setSelectedReservationIds((current) =>
-                            event.target.checked
-                              ? [...current, reservation.reservationId]
-                              : current.filter((id) => id !== reservation.reservationId),
-                          );
+                          setSelectedReservationIds((current) => {
+                            if (event.target.checked) {
+                              return Array.from(new Set([...current, reservation.reservationId]));
+                            }
+
+                            return current.filter((id) => id !== reservation.reservationId);
+                          });
                         }}
-                        className="mt-1 h-5 w-5 rounded border-slate-300 accent-brand-700"
+                        className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-brand-700"
                         aria-label={`Selecionar reserva de ${reservation.participantName}`}
                       />
                       <div className="space-y-1">
-                        <h3 className="text-base font-bold text-ink">{reservation.participantName}</h3>
-                        <p className="text-sm text-slate-600">{reservation.participantEmail}</p>
-                        <p className="text-sm text-slate-600">{reservation.participantPhone}</p>
-                        <div className="flex flex-wrap gap-2 pt-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-sm font-bold text-ink">{reservation.participantName}</h3>
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                              reservation.reservationStatus === "paid"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : "bg-amber-100 text-amber-800"
+                            }`}
+                          >
+                            {reservation.reservationStatus === "paid" ? "Pago" : "Pendente"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600">{reservation.participantEmail}</p>
+                        <p className="text-xs text-slate-600">{reservation.participantPhone}</p>
+                        <p className="text-[11px] text-slate-500">
+                          Reserva {reservation.reservationId.slice(0, 8)} • {formatDate(reservation.createdAt)}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 pt-1">
                           {reservation.ticketNumbers.map((ticketNumber) => (
                             <span
                               key={ticketNumber}
-                              className="rounded-full bg-white px-3 py-1 text-xs font-black text-ink"
+                              className="rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-ink"
                             >
                               {ticketNumber}
                             </span>
@@ -553,13 +617,10 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-1 text-right text-sm text-slate-600">
+                    <div className="space-y-1 text-right text-xs leading-5 text-slate-600">
                       <p>{reservation.quantity} cota(s)</p>
                       <p>{formatCurrencyFromCents(reservation.totalAmountInCents)}</p>
-                      <p>Status: {reservation.reservationStatus}</p>
-                      <p>
-                        Email: {reservation.receiptEmailSentAt ? "enviado" : "pendente"}
-                      </p>
+                      <p>Email: {reservation.receiptEmailSentAt ? "enviado" : "pendente"}</p>
                     </div>
                   </div>
                   {reservation.reservationStatus !== "paid" ? (
@@ -568,13 +629,15 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                       onClick={() => {
                         void confirmPayments([reservation.reservationId]);
                       }}
-                      className="mt-4 rounded-2xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white"
+                      className="mt-3 rounded-2xl bg-brand-700 px-3 py-2 text-xs font-semibold text-white"
                     >
                       Confirmar e enviar email
                     </button>
                   ) : null}
                 </article>
-              ))
+                  </div>
+                );
+              })
             ) : (
               <StateCard message="Nenhuma reserva registrada ainda." />
             )}

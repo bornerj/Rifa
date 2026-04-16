@@ -45,6 +45,7 @@ export async function sendPaymentReceiptEmail({
         <p>Seus numeros da rifa:</p>
         <ul>${ticketList}</ul>
         <p>Guarde este email como recibo da sua participacao.</p>
+        <p>Agradecemos de coracao pela sua participacao. Sua ajuda sera de grande valia e tem um impacto muito importante.</p>
       </div>
     `,
   });

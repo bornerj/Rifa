@@ -5,7 +5,6 @@ import { ParticipantFlow } from "@/features/participants/components/participant-
 import { ImageShowcaseGrid } from "@/features/raffles/components/image-showcase-grid";
 import { PixPaymentCard } from "@/features/raffles/components/pix-payment-card";
 import { ShareRaffleButton } from "@/features/raffles/components/share-raffle-button";
-import { TicketGrid } from "@/features/participants/components/ticket-grid";
 import { getPublicRaffleBySlug } from "@/features/raffles/repository";
 import { formatCurrencyFromCents, formatDate } from "@/lib/formatters";
 
@@ -112,37 +111,6 @@ export default async function PublicRafflePage({
               Realizar nova cota
             </a>
           </aside>
-        </section>
-
-        <section className="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-raffle">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-700">
-                Grade de cotistas
-              </p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-ink">
-                Uma entrada por cota reservada
-              </h2>
-            </div>
-            {raffle.latestDraw ? (
-              <p className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-800">
-                Sorteio realizado em {formatDate(raffle.latestDraw.createdAt)}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="mt-5">
-            {raffle.soldTickets.length ? (
-              <TicketGrid
-                tickets={raffle.soldTickets}
-                winningTicketId={raffle.latestDraw?.winningTicketId ?? null}
-              />
-            ) : (
-              <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-                Ainda nao existem cotas reservadas nesta rifa.
-              </div>
-            )}
-          </div>
         </section>
       </div>
     </main>
