@@ -224,6 +224,7 @@ export async function getAdminRaffleOperations(raffleId: string, userId: string)
       totalAmountInCents: quotaReservations.totalAmountInCents,
       quantity: quotaReservations.quantity,
       createdAt: quotaReservations.createdAt,
+      participantId: participants.id,
       participantName: participants.name,
       participantEmail: participants.email,
       participantPhone: participants.phoneE164,
@@ -239,6 +240,7 @@ export async function getAdminRaffleOperations(raffleId: string, userId: string)
       ticketId: quotaTickets.id,
       ticketNumber: quotaTickets.ticketNumber,
       paymentStatus: quotaTickets.paymentStatus,
+      participantId: participants.id,
       participantName: participants.name,
       reservationId: quotaTickets.reservationId,
     })

@@ -923,3 +923,60 @@ Ultimo passo concluido:
 
 Proximo passo:
 - Testar a confirmacao visual com uma pendencia real no painel.
+
+## 2026-05-01 — START PLAN-0004-simulation-visual-and-participant-editing
+
+Contexto/objetivo:
+- Abrir a proxima frente estrutural para refinar a tela de simulacao e permitir edicao cadastral do participante no painel admin.
+
+Arquivos alterados:
+- `memory/plans/PLAN-0004-DONE-simulation-visual-and-participant-editing.md`
+
+Validacoes executadas:
+- Leitura da tela atual de simulacao
+- Leitura do payload administrativo da rifa
+- Confirmacao com o usuario sobre envio manual do `email oficial` e teste de gravacao da simulacao
+
+Resultado:
+- `PLAN-0004` aberto com escopo aprovado para simplificar os boxes da simulacao, adicionar o `email oficial`, habilitar gravacao de teste e editar participante.
+
+Ultimo passo concluido:
+- Escopo funcional do novo slice confirmado.
+
+Proximo passo:
+- Implementar os ajustes de simulacao, notificacao e edicao de participante.
+
+## 2026-05-01 — END PLAN-0004-simulation-visual-and-participant-editing
+
+Contexto/objetivo:
+- Concluir o refinamento visual da simulacao, o envio manual do `email oficial`, a gravacao de teste e a edicao de participante no painel admin.
+
+Arquivos alterados:
+- `src/features/participants/schemas.ts`
+- `src/features/raffles/repository.ts`
+- `src/features/raffles/components/admin-raffle-details-client.tsx`
+- `src/features/raffles/components/draw-simulation-client.tsx`
+- `src/features/notifications/winner-official-email.ts`
+- `src/app/api/admin/raffles/[id]/participants/[participantId]/route.ts`
+- `src/app/api/admin/raffles/[id]/winner-email/route.ts`
+- `memory/plans/PLAN-0004-DONE-simulation-visual-and-participant-editing.md`
+- `memory/MODIFICATION_LOG.md`
+- `memory/progress.md`
+- `memory/PR-0003-DESCRIPTION.md`
+
+Validacoes executadas:
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+
+Resultado:
+- A simulacao passou a exibir apenas o numero da cota em cada box e reforca visualmente o ultimo numero parado.
+- A tela de simulacao agora oferece o botao `Enviar email oficial`, sem envio automatico previo.
+- Foi habilitada a gravacao de teste da simulacao via captura de tela/aba do navegador.
+- O painel admin passou a permitir editar nome, email e telefone do participante diretamente a partir do card da reserva.
+
+Ultimo passo concluido:
+- `PLAN-0004` implementado, validado e encerrado.
+
+Proximo passo:
+- Testar manualmente a gravacao e o envio do `email oficial` em ambiente real antes de promover a simulacao para sorteio definitivo.

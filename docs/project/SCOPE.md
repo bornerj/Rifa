@@ -1,6 +1,6 @@
 # Escopo do Projeto Rifa
 
-Last updated: 2026-04-16
+Last updated: 2026-05-01
 
 ## Objetivo
 
@@ -44,8 +44,17 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
   - edicao de nome, proposito, beneficiario e valor da cota
   - visualizacao das reservas/participantes em grid operacional
   - confirmacao manual de pagamento apos recebimento do PIX
+  - envio de email de follow-up para reserva pendente com a acao `Checar pagamento`
+  - exclusao de reserva pendente e da cota vinculada com confirmacao previa das cotas afetadas
+  - edicao de nome, email e telefone do participante direto no card da reserva
   - envio de recibo/confirmacao por email via Brevo com os numeros da rifa
-  - execucao de sorteio
+  - visualizacao do total de pagamentos confirmados no agrupamento operacional
+- Tela separada de simulacao do sorteio com:
+  - exibicao apenas das cotas com pagamento confirmado
+  - boxes contendo apenas o numero da cota
+  - destaque visual do ultimo numero parado como ganhador da simulacao
+  - botao manual `Enviar email oficial` com nome do ganhador e numero sorteado
+  - gravacao de teste por captura da aba/janela para avaliar a viabilidade do video da roleta
 - Sorteio restrito ao admin criador da rifa
 - Registro auditavel do sorteio com vencedor persistido no banco
 
@@ -59,7 +68,9 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
 - A aplicacao deve adotar protecao contra SQL injection por meio de consultas parametrizadas e validacao de entrada
 - O participante nao deve passar por OTP, SMS ou WhatsApp no MVP revisado
 - Brevo sera usado para email transacional de recibo/confirmacao apos pagamento confirmado pelo admin
+- Brevo tambem sera usado para o disparo manual do `email oficial` do resultado na tela de simulacao
 - Alteracao de valor da cota vale somente para reservas futuras; reservas existentes preservam valor unitario e total ja persistidos
+- Exclusao de pendencia remove apenas a reserva nao paga e a cota vinculada, preservando o cadastro do participante
 
 ## Fora do Escopo Inicial
 
@@ -78,6 +89,8 @@ Construir uma plataforma web mobile-first para criacao, publicacao, participacao
 - Tratar o sorteio como selecao auditavel no banco, deixando a animacao apenas como experiencia visual
 - Remover a verificacao por OTP para reduzir atrito do participante
 - Enviar confirmacao e recibo por email somente apos confirmacao manual do PIX recebido
+- Separar a simulacao do sorteio em uma tela dedicada antes de promover o fluxo para o sorteio oficial
+- Exigir confirmacao visual antes de excluir uma pendencia do painel administrativo
 
 ## Referencias
 

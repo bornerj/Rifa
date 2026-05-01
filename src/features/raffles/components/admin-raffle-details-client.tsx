@@ -32,6 +32,7 @@ type AdminRaffleDetailsPayload = {
       totalAmountInCents: number;
       quantity: number;
       createdAt: string;
+      participantId: string;
       participantName: string;
       participantEmail: string;
       participantPhone: string;
@@ -42,6 +43,7 @@ type AdminRaffleDetailsPayload = {
       ticketId: string;
       ticketNumber: string;
       paymentStatus: string;
+      participantId: string;
       participantName: string;
       reservationId: string;
     }>;
@@ -84,6 +86,16 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     ticketNumbers: string[];
   } | null>(null);
   const [isDeletingReservation, setIsDeletingReservation] = useState(false);
+  const [participantPendingEdit, setParticipantPendingEdit] = useState<{
+    participantId: string;
+    participantName: string;
+  } | null>(null);
+  const [participantForm, setParticipantForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [isSavingParticipant, setIsSavingParticipant] = useState(false);
 
   const fetchDetails = useCallback(async () => {
     const response = await fetch(`/api/admin/raffles/${raffleId}`, {
@@ -268,6 +280,39 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     }
   }
 
+  async function saveParticipantDetails(): Promise<void> {
+    if (!participantPendingEdit) {
+      return;
+    }
+
+    setError(null);
+    setNotice(null);
+    setIsSavingParticipant(true);
+
+    const response = await fetch(
+      `/api/admin/raffles/${raffleId}/participants/${participantPendingEdit.participantId}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(participantForm),
+      },
+    );
+
+    try {
+      if (!response.ok) {
+        const payload = (await response.json()) as { message?: string };
+        setError(payload.message ?? "Nao foi possivel salvar os dados do participante.");
+        return;
+      }
+
+      setParticipantPendingEdit(null);
+      setNotice("Dados do participante atualizados com sucesso.");
+      await fetchDetails();
+    } finally {
+      setIsSavingParticipant(false);
+    }
+  }
+
   async function saveRaffleDetails(): Promise<void> {
     setError(null);
     const response = await fetch(`/api/admin/raffles/${raffleId}/details`, {
@@ -389,6 +434,71 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                 setReservationPendingDeletion(null);
               }}
               disabled={isDeletingReservation}
+              className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {participantPendingEdit ? (
+        <div className="rounded-[2rem] border border-brand-200 bg-brand-50/90 p-5 shadow-raffle">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-700">
+            Editar participante
+          </p>
+          <h2 className="mt-2 text-xl font-black tracking-[-0.03em] text-ink">
+            Atualizar cadastro de {participantPendingEdit.participantName}
+          </h2>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-semibold text-slate-700">Nome</span>
+              <input
+                value={participantForm.name}
+                onChange={(event) => {
+                  setParticipantForm((current) => ({ ...current, name: event.target.value }));
+                }}
+                className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500"
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-semibold text-slate-700">Email</span>
+              <input
+                value={participantForm.email}
+                onChange={(event) => {
+                  setParticipantForm((current) => ({ ...current, email: event.target.value }));
+                }}
+                className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500"
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-semibold text-slate-700">Telefone</span>
+              <input
+                value={participantForm.phone}
+                onChange={(event) => {
+                  setParticipantForm((current) => ({ ...current, phone: event.target.value }));
+                }}
+                className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500"
+              />
+            </label>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                void saveParticipantDetails();
+              }}
+              disabled={isSavingParticipant}
+              className="rounded-2xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-brand-300"
+            >
+              {isSavingParticipant ? "Salvando..." : "Salvar participante"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setParticipantPendingEdit(null);
+              }}
+              disabled={isSavingParticipant}
               className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed"
             >
               Cancelar
@@ -725,8 +835,26 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                       <p>Email: {reservation.receiptEmailSentAt ? "enviado" : "pendente"}</p>
                     </div>
                   </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setParticipantPendingEdit({
+                          participantId: reservation.participantId,
+                          participantName: reservation.participantName,
+                        });
+                        setParticipantForm({
+                          name: reservation.participantName,
+                          email: reservation.participantEmail,
+                          phone: reservation.participantPhone,
+                        });
+                      }}
+                      className="rounded-2xl border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-800"
+                    >
+                      Editar participante
+                    </button>
                   {reservation.reservationStatus !== "paid" ? (
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <>
                       <button
                         type="button"
                         onClick={() => {
@@ -758,8 +886,9 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                       >
                         Excluir pendencia
                       </button>
-                    </div>
+                    </>
                   ) : null}
+                  </div>
                 </article>
                   </div>
                 );

@@ -39,6 +39,10 @@
 - Validacao em producao concluida com sucesso para os botoes da entrega mais recente
 - Painel admin exibe o total de pagamentos confirmados no agrupamento operacional
 - Existe uma tela admin separada para simulacao visual do sorteio usando apenas cotas confirmadas
+- Tela de simulacao mostra apenas os numeros das cotas e destaca visualmente o numero final vencedor
+- Tela de simulacao oferece botao manual `Enviar email oficial` baseado no numero parado
+- Tela de simulacao oferece gravacao de teste via captura da aba/janela do navegador
+- Painel admin permite editar nome, email e telefone do participante direto no card da reserva
 
 ## In Progress Now
 
@@ -55,4 +59,4 @@
 
 ## Immediate Next Step
 
-- Validar a simulacao com dados reais e definir o fluxo definitivo de sorteio com persistencia do numero vencedor
+- Validar com dados reais a gravacao da simulacao e o `email oficial` antes de habilitar o sorteio definitivo com persistencia do numero vencedor
