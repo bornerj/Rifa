@@ -801,6 +801,29 @@ Ultimo passo concluido:
 Proximo passo:
 - Definir a proxima prioridade de evolucao do produto.
 
+## 2026-04-16 — Validacao em producao do follow-up de pagamento
+
+Contexto/objetivo:
+- Registrar a validacao final em producao da entrega publicada no commit `a28fc7a`.
+
+Arquivos alterados:
+- `memory/MODIFICATION_LOG.md`
+- `memory/progress.md`
+
+Validacoes executadas:
+- Confirmacao do usuario apos teste em producao
+- Checagem manual dos botoes relacionados a entrega publicada
+
+Resultado:
+- Validacao em producao concluida com sucesso.
+- Os botoes publicados foram testados e estao funcionando corretamente.
+
+Ultimo passo concluido:
+- Confirmacao funcional da entrega em ambiente de producao.
+
+Proximo passo:
+- Projeto pode ser encerrado nesta sessao, salvo nova prioridade.
+
 ## 2026-04-16 — Normalizacao do MODIFICATION_LOG para pt-BR
 
 Contexto/objetivo:
@@ -822,3 +845,81 @@ Ultimo passo concluido:
 
 Proximo passo:
 - Manter todos os proximos registros de memoria em pt-BR.
+
+## 2026-05-01 — START PLAN-0003-admin-cleanup-and-draw-simulation
+
+Contexto/objetivo:
+- Abrir um novo plano estrutural para limpar pendencias no admin e separar a simulacao do sorteio em uma tela dedicada.
+
+Arquivos alterados:
+- `memory/plans/PLAN-0003-DONE-admin-cleanup-and-draw-simulation.md`
+
+Validacoes executadas:
+- Leitura do painel admin atual
+- Leitura das rotas atuais de pagamentos e sorteio
+- Validacao com o usuario das regras de exclusao e da elegibilidade visual da simulacao
+
+Resultado:
+- O `PLAN-0003` foi aberto com escopo confirmado para exclusao de pendencia, contagem de pagamentos confirmados e tela separada de simulacao.
+
+Ultimo passo concluido:
+- Plano aprovado com regras de negocio confirmadas.
+
+Proximo passo:
+- Implementar as mudancas no admin e a tela de simulacao.
+
+## 2026-05-01 — END PLAN-0003-admin-cleanup-and-draw-simulation
+
+Contexto/objetivo:
+- Concluir a limpeza operacional das pendencias no admin e entregar a tela separada de simulacao do sorteio.
+
+Arquivos alterados:
+- `src/features/raffles/components/admin-raffle-details-client.tsx`
+- `src/app/api/admin/raffles/[id]/reservations/[reservationId]/route.ts`
+- `src/features/raffles/components/draw-simulation-client.tsx`
+- `src/app/admin/rifas/[id]/sorteio/page.tsx`
+- `memory/plans/PLAN-0003-DONE-admin-cleanup-and-draw-simulation.md`
+- `memory/MODIFICATION_LOG.md`
+- `memory/progress.md`
+- `memory/PR-0002-DESCRIPTION.md`
+
+Validacoes executadas:
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+
+Resultado:
+- Reservas nao pagas agora podem ser excluidas diretamente no painel admin sem apagar o cadastro do participante.
+- O agrupamento `Pagamentos confirmados` passou a mostrar o total de pagamentos confirmados.
+- A rifa ganhou a rota `/admin/rifas/[id]/sorteio`, dedicada a uma simulacao visual com apenas cotas confirmadas e desaceleracao estilo roleta.
+- O painel principal passou a apontar para a nova tela de simulacao em vez de disparar o sorteio oficial por engano nesta fase.
+
+Ultimo passo concluido:
+- `PLAN-0003` implementado, validado e encerrado.
+
+Proximo passo:
+- Validar visualmente a simulacao com dados reais e decidir o desenho do sorteio definitivo com persistencia do numero vencedor.
+
+## 2026-05-01 — Confirmacao visual antes de excluir pendencia
+
+Contexto/objetivo:
+- Tornar a exclusao de pendencias mais segura no painel admin, exigindo confirmacao explicita apos visualizar as cotas que serao removidas.
+
+Arquivos alterados:
+- `src/features/raffles/components/admin-raffle-details-client.tsx`
+- `memory/MODIFICATION_LOG.md`
+- `memory/PR-0002-DESCRIPTION.md`
+
+Validacoes executadas:
+- `npm run lint`
+- `npm run typecheck`
+
+Resultado:
+- O clique em `Excluir pendencia` nao remove mais nada imediatamente.
+- O admin agora ve um display de confirmacao com as cotas envolvidas e so conclui a exclusao ao clicar em `SIM`.
+
+Ultimo passo concluido:
+- Etapa de confirmacao da exclusao adicionada ao fluxo administrativo.
+
+Proximo passo:
+- Testar a confirmacao visual com uma pendencia real no painel.

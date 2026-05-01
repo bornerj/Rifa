@@ -34,7 +34,11 @@
 - Pagina inicial convertida em landing page comercial com destaque para a rifa publicada mais recente
 - Painel admin permite editar nome, proposito, beneficiario e valor da cota da rifa
 - Painel admin permite enviar email de follow-up por reserva pendente com a acao `Checar pagamento`
+- Painel admin permite excluir reserva pendente e sua cota vinculada com a acao `Excluir pendencia`
 - Tela publica informa abaixo do copiar PIX que o email de confirmacao nao e automatico
+- Validacao em producao concluida com sucesso para os botoes da entrega mais recente
+- Painel admin exibe o total de pagamentos confirmados no agrupamento operacional
+- Existe uma tela admin separada para simulacao visual do sorteio usando apenas cotas confirmadas
 
 ## In Progress Now
 
@@ -51,4 +55,4 @@
 
 ## Immediate Next Step
 
-- Definir a proxima prioridade de produto apos a conclusao do `PLAN-0002`
+- Validar a simulacao com dados reais e definir o fluxo definitivo de sorteio com persistencia do numero vencedor

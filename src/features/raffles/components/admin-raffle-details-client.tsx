@@ -61,7 +61,7 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
   const [data, setData] = useState<AdminRaffleDetailsPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [pixForm, setPixForm] = useState({
     pixLabel: "",
     pixPayload: "",
@@ -78,6 +78,12 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
   });
   const [selectedReservationIds, setSelectedReservationIds] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [reservationPendingDeletion, setReservationPendingDeletion] = useState<{
+    reservationId: string;
+    participantName: string;
+    ticketNumbers: string[];
+  } | null>(null);
+  const [isDeletingReservation, setIsDeletingReservation] = useState(false);
 
   const fetchDetails = useCallback(async () => {
     const response = await fetch(`/api/admin/raffles/${raffleId}`, {
@@ -234,19 +240,32 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
     }
   }
 
-  async function runDraw(): Promise<void> {
+  async function deletePendingReservation(reservationId: string): Promise<void> {
     setError(null);
-    const response = await fetch(`/api/admin/raffles/${raffleId}/draw`, {
-      method: "POST",
-    });
+    setNotice(null);
+    setIsDeletingReservation(true);
 
-    if (!response.ok) {
-      const payload = (await response.json()) as { message?: string };
-      setError(payload.message ?? "Nao foi possivel executar o sorteio.");
-      return;
+    const response = await fetch(
+      `/api/admin/raffles/${raffleId}/reservations/${reservationId}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    try {
+      if (!response.ok) {
+        const payload = (await response.json()) as { message?: string };
+        setError(payload.message ?? "Nao foi possivel excluir a pendencia.");
+        return;
+      }
+
+      setSelectedReservationIds((current) => current.filter((id) => id !== reservationId));
+      setReservationPendingDeletion(null);
+      setNotice("Pendencia excluida com sucesso.");
+      await fetchDetails();
+    } finally {
+      setIsDeletingReservation(false);
     }
-
-    await fetchDetails();
   }
 
   async function saveRaffleDetails(): Promise<void> {
@@ -313,6 +332,9 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
 
   const { raffle, operations } = data;
   const hasPixConfigured = Boolean(raffle.pixLabel.trim() && raffle.pixPayload.trim());
+  const confirmedPaymentsCount = operations.reservations.filter(
+    (reservation) => reservation.reservationStatus === "paid",
+  ).length;
 
   return (
     <>
@@ -321,6 +343,58 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
       ) : null}
       {notice ? (
         <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{notice}</div>
+      ) : null}
+
+      {reservationPendingDeletion ? (
+        <div className="rounded-[2rem] border border-rose-200 bg-rose-50/90 p-5 shadow-raffle">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-700">
+            Confirmar exclusao
+          </p>
+          <h2 className="mt-2 text-xl font-black tracking-[-0.03em] text-ink">
+            Deseja excluir esta pendencia?
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-slate-700">
+            Participante: <strong>{reservationPendingDeletion.participantName}</strong>
+          </p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">
+            As seguintes cotas serao excluidas:
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {reservationPendingDeletion.ticketNumbers.map((ticketNumber) => (
+              <span
+                key={`delete-ticket-${ticketNumber}`}
+                className="rounded-full border border-rose-200 bg-white px-3 py-1 text-xs font-black text-rose-700"
+              >
+                {ticketNumber}
+              </span>
+            ))}
+          </div>
+          <p className="mt-3 text-xs leading-5 text-slate-600">
+            A exclusao so acontece se voce confirmar no botao <strong>SIM</strong>.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                void deletePendingReservation(reservationPendingDeletion.reservationId);
+              }}
+              disabled={isDeletingReservation}
+              className="rounded-2xl bg-rose-700 px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-rose-300"
+            >
+              {isDeletingReservation ? "Excluindo..." : "SIM"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setReservationPendingDeletion(null);
+              }}
+              disabled={isDeletingReservation}
+              className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
       ) : null}
 
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
@@ -535,24 +609,19 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
           <section className="rounded-[2rem] border border-white/70 bg-white/90 p-5 shadow-raffle">
             <h2 className="text-lg font-black tracking-[-0.03em] text-ink">Sorteio</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              O sorteio usa somente cotas com pagamento confirmado e grava o resultado com contexto auditavel.
+              A simulacao do sorteio agora acontece em uma tela separada, mostrando apenas cotas com pagamento confirmado.
             </p>
             {operations.latestDraw ? (
               <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Sorteio realizado em {formatDate(operations.latestDraw.createdAt)}.
+                Sorteio oficial realizado em {formatDate(operations.latestDraw.createdAt)}.
               </p>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  void runDraw();
-                }}
-                disabled={isPending}
-                className="mt-4 rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white"
-              >
-                Executar sorteio
-              </button>
-            )}
+            ) : null}
+            <Link
+              href={`/admin/rifas/${raffle.id}/sorteio`}
+              className="mt-4 inline-flex rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white"
+            >
+              Abrir tela de simulacao
+            </Link>
           </section>
         </aside>
       </div>
@@ -593,7 +662,7 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                       <div className="px-1">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
                           {reservation.reservationStatus === "paid"
-                            ? "Pagamentos confirmados"
+                            ? `Pagamentos confirmados (${confirmedPaymentsCount})`
                             : "Aguardando confirmacao"}
                         </p>
                       </div>
@@ -675,6 +744,19 @@ export function AdminRaffleDetailsClient({ raffleId }: Props): React.JSX.Element
                         className="rounded-2xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                       >
                         Checar pagamento
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReservationPendingDeletion({
+                            reservationId: reservation.reservationId,
+                            participantName: reservation.participantName,
+                            ticketNumbers: reservation.ticketNumbers,
+                          });
+                        }}
+                        className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"
+                      >
+                        Excluir pendencia
                       </button>
                     </div>
                   ) : null}
