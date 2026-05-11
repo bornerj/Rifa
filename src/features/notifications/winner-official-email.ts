@@ -70,6 +70,7 @@ export async function sendWinnerOfficialEmail({
             : ""
         }
         <p>Obrigado por acompanhar e participar.</p>
+        <p>Atraso a divulgacao devido a problemas de saude. Muito Obrigado</p>
       </div>
     `,
     attachments,
