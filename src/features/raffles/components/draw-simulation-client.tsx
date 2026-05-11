@@ -30,6 +30,8 @@ type Props = {
   raffleId: string;
 };
 
+const DEMO_WINNING_TICKET_NUMBER = "77028";
+
 export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
   const [data, setData] = useState<DrawSimulationPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -250,16 +252,24 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
       return;
     }
 
+    const demoWinnerIndex = confirmedTickets.findIndex(
+      (ticket) => ticket.ticketNumber === DEMO_WINNING_TICKET_NUMBER,
+    );
+
+    if (demoWinnerIndex === -1) {
+      setError(`A cota demo ${DEMO_WINNING_TICKET_NUMBER} nao esta entre as cotas confirmadas.`);
+      return;
+    }
+
     clearSimulationTimers();
     setIsSimulating(true);
     setError(null);
     setNotice(null);
     setActiveTicketId(null);
     setSimulatedWinnerId(null);
-    setSimulationMessage("Simulando a roleta das cotas confirmadas...");
+    setSimulationMessage("Sorteio demo em andamento com as cotas confirmadas...");
 
-    const winnerIndex = Math.floor(Math.random() * confirmedTickets.length);
-    const totalSteps = confirmedTickets.length * 5 + winnerIndex + 1;
+    const totalSteps = confirmedTickets.length * 5 + demoWinnerIndex + 1;
     let accumulatedDelay = 0;
     let currentDelay = 70;
 
@@ -274,7 +284,7 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
         if (isLastStep) {
           setSimulatedWinnerId(ticket.ticketId);
           setIsSimulating(false);
-          setSimulationMessage(`Simulacao encerrada no numero ${ticket.ticketNumber}.`);
+          setSimulationMessage(`Sorteio demo encerrado no numero ${ticket.ticketNumber}.`);
         }
       }, accumulatedDelay);
 
@@ -299,11 +309,11 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-700">
-              Simulacao visual
+              Sorteio demo
             </p>
             <h2 className="mt-2 text-3xl font-black tracking-[-0.05em] text-ink">{data.raffle.name}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-              Esta tela usa apenas as cotas com pagamento confirmado. A simulacao nao grava ganhador e nao encerra a rifa.
+              Esta tela usa apenas as cotas com pagamento confirmado. O resultado exibido aqui e demo, nao grava ganhador e nao encerra a rifa.
             </p>
           </div>
           <div className="rounded-[1.5rem] bg-slate-50 px-4 py-3 text-right">
@@ -343,9 +353,9 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
 
       <aside className="space-y-4">
         <section className="rounded-[2rem] border border-white/70 bg-white/90 p-5 shadow-raffle">
-          <h3 className="text-lg font-black tracking-[-0.03em] text-ink">Controle da simulacao</h3>
+          <h3 className="text-lg font-black tracking-[-0.03em] text-ink">Sorteio</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Clique em `Simular` para acender os numeros em sequencia, como uma roleta desacelerando ate parar.
+            Cique em Sorteio. Demo configurada para parar no numero {DEMO_WINNING_TICKET_NUMBER}.
           </p>
           <button
             type="button"
@@ -353,14 +363,14 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
             disabled={!confirmedTickets.length || isSimulating}
             className="mt-4 w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           >
-            {isSimulating ? "Simulando..." : "Simular"}
+            {isSimulating ? "Sorteando..." : "Sorteio"}
           </button>
           {simulationMessage ? (
             <p className="mt-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">{simulationMessage}</p>
           ) : null}
           {displayedWinner ? (
             <div className="mt-3 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              Numero parado na simulacao: <strong>{displayedWinner.ticketNumber}</strong>
+              Numero Sorteado foi : <strong>{displayedWinner.ticketNumber}</strong>
             </div>
           ) : null}
           <button
