@@ -386,7 +386,7 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
         </section>
 
         <section className="rounded-[2rem] border border-white/70 bg-white/90 p-5 shadow-raffle">
-          <h3 className="text-lg font-black tracking-[-0.03em] text-ink">Gravacao de teste</h3>
+          <h3 className="text-lg font-black tracking-[-0.03em] text-ink">Gravacao</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             Use a captura da aba ou janela da simulacao para avaliarmos se a gravacao da roleta funciona bem no ambiente real.
           </p>
