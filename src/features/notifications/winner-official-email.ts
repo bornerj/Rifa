@@ -6,6 +6,10 @@ type SendWinnerOfficialEmailInput = {
   raffleName: string;
   winnerName: string;
   winningTicketNumber: string;
+  attachmentUrls: {
+    imageUrl: string | null;
+    videoUrl: string | null;
+  };
 };
 
 function escapeHtml(value: string): string {
@@ -23,11 +27,32 @@ export async function sendWinnerOfficialEmail({
   raffleName,
   winnerName,
   winningTicketNumber,
+  attachmentUrls,
 }: SendWinnerOfficialEmailInput): Promise<{ delivered: boolean; previewOnly: boolean }> {
   const safeParticipantName = escapeHtml(participantName);
   const safeRaffleName = escapeHtml(raffleName);
   const safeWinnerName = escapeHtml(winnerName);
   const safeWinningTicketNumber = escapeHtml(winningTicketNumber);
+  const safeVideoUrl = attachmentUrls.videoUrl ? escapeHtml(attachmentUrls.videoUrl) : null;
+
+  const attachments = [
+    attachmentUrls.imageUrl
+      ? {
+          filename: "imagem-rifa.jpg",
+          path: attachmentUrls.imageUrl,
+          contentType: "image/jpeg",
+        }
+      : null,
+    attachmentUrls.videoUrl
+      ? {
+          filename: "sorteio-rifa.webm",
+          path: attachmentUrls.videoUrl,
+          contentType: "video/webm",
+        }
+      : null,
+  ].filter((attachment): attachment is { filename: string; path: string; contentType: string } =>
+    Boolean(attachment),
+  );
 
   return sendTransactionalEmail({
     to: participantEmail,
@@ -39,8 +64,14 @@ export async function sendWinnerOfficialEmail({
         <p>Temos o resultado oficial da rifa <strong>${safeRaffleName}</strong>.</p>
         <p><strong>Ganhador:</strong> ${safeWinnerName}</p>
         <p><strong>Numero sorteado:</strong> ${safeWinningTicketNumber}</p>
+        ${
+          safeVideoUrl
+            ? `<p>O video do sorteio tambem esta disponivel aqui: <a href="${safeVideoUrl}">${safeVideoUrl}</a></p>`
+            : ""
+        }
         <p>Obrigado por acompanhar e participar.</p>
       </div>
     `,
+    attachments,
   });
 }

@@ -44,6 +44,7 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
   const [isRecording, setIsRecording] = useState(false);
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const [isSendingWinnerEmail, setIsSendingWinnerEmail] = useState(false);
+  const [isSendingCheckEmail, setIsSendingCheckEmail] = useState(false);
   const timeoutIdsRef = useRef<number[]>([]);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const captureStreamRef = useRef<MediaStream | null>(null);
@@ -210,20 +211,24 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
     setIsRecording(false);
   }
 
-  async function sendWinnerOfficialEmail(): Promise<void> {
-    if (!simulatedWinnerId) {
-      setError("Simule a roleta primeiro para definir o numero vencedor antes de enviar o email oficial.");
+  async function sendWinnerOfficialEmail(deliveryMode: "check" | "official"): Promise<void> {
+    if (!data?.operations.latestDraw) {
+      setError("Grave o sorteio oficial antes de enviar o email do resultado.");
       return;
     }
 
     setError(null);
     setNotice(null);
-    setIsSendingWinnerEmail(true);
+    if (deliveryMode === "check") {
+      setIsSendingCheckEmail(true);
+    } else {
+      setIsSendingWinnerEmail(true);
+    }
 
     const response = await fetch(`/api/admin/raffles/${raffleId}/winner-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ winningTicketId: simulatedWinnerId }),
+      body: JSON.stringify({ deliveryMode }),
     });
 
     try {
@@ -234,16 +239,24 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
       }
 
       const payload = (await response.json()) as {
+        deliveryMode?: "check" | "official";
         sentCount?: number;
         winnerName?: string;
         winningTicketNumber?: string;
       };
 
+      const recipientLabel =
+        payload.deliveryMode === "check" ? "participante sem cota" : "cadastro(s)";
+
       setNotice(
-        `Email oficial enviado/preparado para ${payload.sentCount ?? 0} cadastro(s) com o ganhador ${payload.winnerName ?? "-"} e o numero ${payload.winningTicketNumber ?? "-"}.`,
+        `Email oficial enviado/preparado para ${payload.sentCount ?? 0} ${recipientLabel} com o ganhador ${payload.winnerName ?? "-"} e o numero ${payload.winningTicketNumber ?? "-"}.`,
       );
     } finally {
-      setIsSendingWinnerEmail(false);
+      if (deliveryMode === "check") {
+        setIsSendingCheckEmail(false);
+      } else {
+        setIsSendingWinnerEmail(false);
+      }
     }
   }
 
@@ -376,9 +389,19 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
           <button
             type="button"
             onClick={() => {
-              void sendWinnerOfficialEmail();
+              void sendWinnerOfficialEmail("check");
             }}
-            disabled={!simulatedWinnerId || isSendingWinnerEmail}
+            disabled={!data.operations.latestDraw || isSendingCheckEmail || isSendingWinnerEmail}
+            className="mt-3 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:bg-slate-100"
+          >
+            {isSendingCheckEmail ? "Enviando..." : "Conferir"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              void sendWinnerOfficialEmail("official");
+            }}
+            disabled={!data.operations.latestDraw || isSendingWinnerEmail || isSendingCheckEmail}
             className="mt-3 w-full rounded-2xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             {isSendingWinnerEmail ? "Enviando..." : "Enviar email oficial"}

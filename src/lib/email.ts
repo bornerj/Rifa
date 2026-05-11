@@ -7,6 +7,11 @@ type SendTransactionalEmailInput = {
   to: string;
   subject: string;
   html: string;
+  attachments?: Array<{
+    filename: string;
+    path: string;
+    contentType?: string;
+  }>;
 };
 
 export type EmailDeliveryResult = {
@@ -18,6 +23,7 @@ export async function sendTransactionalEmail({
   to,
   subject,
   html,
+  attachments,
 }: SendTransactionalEmailInput): Promise<EmailDeliveryResult> {
   const provider = readProviderEnv();
   const smtpPassword = provider.BREVO_SMTP_KEY ?? provider.BREVO_API_KEY;
@@ -47,6 +53,7 @@ export async function sendTransactionalEmail({
     to,
     subject,
     html,
+    attachments,
   });
 
   return { delivered: true, previewOnly: false };
