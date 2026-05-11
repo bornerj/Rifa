@@ -355,7 +355,7 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
         <section className="rounded-[2rem] border border-white/70 bg-white/90 p-5 shadow-raffle">
           <h3 className="text-lg font-black tracking-[-0.03em] text-ink">Sorteio</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Cique em Sorteio. Demo configurada para parar no numero {DEMO_WINNING_TICKET_NUMBER}.
+            Cique em Sorteio.
           </p>
           <button
             type="button"
@@ -431,15 +431,12 @@ export function DrawSimulationClient({ raffleId }: Props): React.JSX.Element {
 
         <section className="rounded-[2rem] border border-white/70 bg-white/90 p-5 shadow-raffle">
           <h3 className="text-lg font-black tracking-[-0.03em] text-ink">Status oficial</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            O sorteio oficial continua separado desta simulacao e ainda nao sera gravado por aqui.
-          </p>
           {data.operations.latestDraw ? (
-            <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
               Sorteio oficial ja realizado em {formatDate(data.operations.latestDraw.createdAt)}.
             </p>
           ) : (
-            <p className="mt-4 rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
               Nenhum sorteio oficial foi gravado ainda.
             </p>
           )}
